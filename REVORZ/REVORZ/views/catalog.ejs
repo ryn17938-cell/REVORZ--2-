@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Catalog</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="/css/global.min.css">
+        <style>        body {
+            font-family: 'Poppins', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .product-card {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #e5e7eb;
+            position: relative;
+            height: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
+
+        .product-content {
+            padding: 24px;
+        }
+
+        .product-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 12px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-description {
+            color: #718096;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1d4ed8;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .product-price::before {
+            content: 'Rp';
+            font-size: 1rem;
+            margin-right: 4px;
+            color: #a0aec0;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .product-actions .btn-primary,
+        .product-actions .btn-secondary {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-actions-admin {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .product-actions-admin .btn-edit,
+        .product-actions-admin .btn-delete {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+        }
+
+        .btn-secondary {
+            background: #f8fafc;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 100px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #334155;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-edit {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 70px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        .btn-edit:hover {
+            background: #fde68a;
+            border-color: #f59e0b;
+            color: #78350f;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);
+        }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 70px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #7f1d1d;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #a0aec0;
+        }
+
+        .empty-state h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4a5568;
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            font-size: 1.125rem;
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #1d4ed8;
+        }
+
+        .page-title p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .page-title h1 {
+                font-size: 2rem;
+            }
+
+            .product-actions {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .product-actions .btn-primary,
+            .product-actions .btn-secondary {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .product-actions-admin {
+                flex-direction: row;
+                gap: 4px;
+            }
+
+            .product-actions-admin .btn-edit,
+            .product-actions-admin .btn-delete {
+                flex: 1;
+                min-width: 0;
+            }
+        }
+
+        /* Loading animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .product-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .product-card:nth-child(1) { animation-delay: 0.1s; }
+        .product-card:nth-child(2) { animation-delay: 0.2s; }
+        .product-card:nth-child(3) { animation-delay: 0.3s; }
+        .product-card:nth-child(4) { animation-delay: 0.4s; }
+        .product-card:nth-child(5) { animation-delay: 0.5s; }
+        .product-card:nth-child(6) { animation-delay: 0.6s; }
+
+        /* Modal animations */
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes scale-in {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 0.3s ease-out;
+        }
+
+        .animate-scale-in {
+            animation: scale-in 0.3s ease-out;
+        }
+
+        /* Custom file input styling */
+        input[type="file"]::file-selector-button {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+            transform: translateY(-1px);
+        }
+
+        /* Custom popup notification */
+        .popup-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(120%);
+            transition: transform 0.4s ease-in-out;
+        }
+        .popup-notification.show {
+            transform: translateX(0);
+        }
+        .popup-notification.success {
+            background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+        }
+        .popup-notification.error {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white bg-opacity-95 shadow-xl py-6 backdrop-blur-md border-b border-white border-opacity-20">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <!-- Logo -->
+            <a href="/" class="flex items-center space-x-3 text-4xl font-bold text-blue-600 hover:text-blue-700 transition-all duration-300 transform hover:scale-105">
+                <img src="/image/Logo.png" alt="REVOZ Logo" class="h-20 w-20 object-contain">
+                <span>REVOZ</span>
+            </a>
+
+            <!-- Navigation -->
+            <nav class="hidden md:flex space-x-8 ml-8">
+                <a href="/" class="text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium relative group">
+                    Beranda
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="/catalog" class="text-blue-600 font-bold border-b-2 border-blue-600 transition-all duration-300 relative">
+                    Katalog
+                    <span class="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600"></span>
+                </a>
+                <a href="/category" class="text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium relative group">
+                    Kategori
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="/about" class="text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium relative group">
+                    Tentang Kami
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <a href="#" class="text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium relative group">
+                    Kontak
+                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
+                </a>
+                <% if (role === 'admin') { %>
+                    <a href="/admin/add-product" class="text-blue-600 hover:text-blue-700 transition-all duration-300 font-medium relative group">
+                        Tambah Produk
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
+                    </a>
+                <% } %>
+            </nav>
+
+            <!-- Search Bar -->
+            <div class="flex-1 flex justify-center px-8">
+                <form action="/category" method="get" class="w-full max-w-lg">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <input class="search-input w-full pl-10 pr-4 py-2 rounded-full text-gray-700 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" name="q" placeholder="Cari produk...">
+                    </div>
+                </form>
+            </div>
+
+            <!-- Utility Icons -->
+            <div class="flex items-center space-x-6">
+                <!-- Mobile menu toggle -->
+                <button id="mobile-drawer-open" class="md:hidden inline-flex items-center justify-center p-2 rounded-lg bg-blue-50 text-blue-600 mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+                <a href="/cart" class="relative text-gray-700 hover:text-blue-600 transition-all duration-300 transform hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z" />
+                    </svg>
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1 font-bold shadow-lg"><%= cartItemCount %></span>
+                </a>
+                <% if (isLoggedIn) { %>
+                    <div class="flex items-center space-x-3">
+                        <% if (profilePicture) { %>
+                            <img src="<%= profilePicture %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-3 border-blue-500 shadow-lg transform hover:scale-110 transition-all duration-300">
+                        <% } else { %>
+                            <div class="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-lg transform hover:scale-110 transition-all duration-300">
+                                <%= username.charAt(0).toUpperCase() %>
+                            </div>
+                        <% } %>
+                        <a href="/profile" class="text-gray-700 hover:text-blue-600 font-semibold transition-all duration-300 transform hover:scale-105">Halo, <%= username %></a>
+                    </div>
+                    <a href="/logout" class="text-red-600 hover:text-red-700 font-semibold transition-all duration-300 transform hover:scale-105 bg-red-50 hover:bg-red-100 px-3 py-1 rounded-full">Logout</a>
+                <% } else { %>
+                    <a href="/login" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                        Masuk
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Drawer -->
+    <div id="drawer-overlay" class="drawer-overlay hidden-by-js" tabindex="-1" aria-hidden="true"></div>
+    <aside id="mobile-drawer" class="drawer hidden-by-js" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1">
+        <header>
+            <h3 id="drawer-title" class="text-lg font-bold">Menu</h3>
+            <button id="mobile-drawer-close" class="close-btn" aria-label="Tutup menu">✕</button>
+        </header>
+        <nav class="mt-4 space-y-3" aria-label="Primary mobile menu">
+            <a href="/" class="block font-semibold text-gray-700">Beranda</a>
+            <a href="/catalog" class="block font-semibold text-blue-600">Katalog</a>
+            <a href="/category" class="block font-semibold text-gray-700">Kategori</a>
+            <a href="/about" class="block font-semibold text-gray-700">Tentang Kami</a>
+            <a href="/contact" class="block font-semibold text-gray-700">Kontak</a>
+        </nav>
+
+        <!-- Filters -->
+        <div class="drawer-section mt-4">
+            <h4 class="font-semibold mb-2">Kategori</h4>
+            <div id="filter-categories" class="space-y-2">
+                <% if (categories && categories.length) { %>
+                    <% categories.forEach(function(cat) { %>
+                        <label class="flex items-center gap-3">
+                            <input type="checkbox" class="category-filter" value="<%= cat %>"> <span><%= cat %></span>
+                        </label>
+                    <% }); %>
+                <% } else { %>
+                    <p class="muted">Tidak ada kategori</p>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="drawer-section mt-4">
+            <h4 class="font-semibold mb-2">Filter Harga</h4>
+            <div class="space-y-2">
+                <div class="flex items-center justify-between text-sm text-gray-600">
+                    <div>Rp <span id="price-min-display"><%= (typeof priceMin !== 'undefined' ? Number(priceMin).toLocaleString('id-ID') : '0') %></span></div>
+                    <div>Rp <span id="price-max-display"><%= (typeof priceMax !== 'undefined' ? Number(priceMax).toLocaleString('id-ID') : '0') %></span></div>
+                </div>
+                <div class="price-range-wrap">
+                    <input id="price-min" type="range" min="<%= priceMin || 0 %>" max="<%= priceMax || 1000000 %>" step="10000" value="<%= priceMin || 0 %>">
+                    <input id="price-max" type="range" min="<%= priceMin || 0 %>" max="<%= priceMax || 1000000 %>" step="10000" value="<%= priceMax || 1000000 %>">
+                </div>
+                <div class="flex gap-3 mt-3">
+                    <button id="clear-filters" class="btn-secondary w-full" type="button">Clear</button>
+                    <button id="apply-filters" class="btn-primary w-full" type="button">Apply</button>
+                </div>
+            </div>
+        </div>
+        <div class="drawer-section mt-auto">
+            <a href="/cart" class="btn-primary w-full block text-center py-3">Lihat Keranjang</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto py-12 px-4">
+        <div class="page-title">
+            <h1>Katalog Produk Kami</h1>
+            <p>Temukan produk terbaik untuk kebutuhan Anda</p>
+        </div>
+
+        <% if (products && products.length) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <% products.forEach(function(p) { %>
+                    <div class="product-card" data-price="<%= p.price || 0 %>" data-category="<%= p.category || '' %>">
+                        <img src="<%= p.image || '/image/katalog.png' %>" alt="<%= p.name %>" class="product-image">
+                        <div class="product-content">
+                            <h3 class="product-title"><%= p.name %></h3>
+                            <p class="product-description"><%= (p.description || 'Deskripsi produk tidak tersedia.').replace(/<[^>]+>/g, '') %></p>
+                            <div class="product-price"><%= p.price ? p.price.toLocaleString('id-ID') : '0' %></div>
+                            <div class="product-actions">
+                                <a href="/product/<%= p.id %>" class="btn-secondary">
+                                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    Lihat Detail
+                                </a>
+                                <button data-product-id="<%= p.id %>" 
+                                        data-warna="<%= p.warna || '' %>"
+                                        data-ukuran="<%= p.ukuran || '' %>"
+                                        class="btn-primary add-to-cart">
+                                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z"></path>
+                                    </svg>
+                                    Tambah ke Keranjang
+                                </button>
+                            </div>
+                            <% if (role === 'admin') { %>
+                            <div class="product-actions-admin">
+                                <a href="/edit/<%= p.id %>" class="btn-edit">
+                                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                    Edit
+                                </a>
+                                <button data-product-id="<%= p.id %>" data-product-name="<%= p.name %>" class="btn-delete">
+                                    <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                    Hapus
+                                </button>
+                            </div>
+                            <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div class="empty-state">
+                <h2>Tidak ada produk ditemukan</h2>
+                <p>Saat ini tidak ada produk untuk ditampilkan. Silakan kembali lagi nanti.</p>
+            </div>
+        <% } %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="container mx-auto text-center px-4">
+            <p>&copy; 2025 REVOZ. Semua Hak Dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        var isLoggedIn = '<%= isLoggedIn %>' === 'true';
+
+        async function postJson(url, body) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            return res.json();
+        }
+
+        function showPopup(message, success = true) {
+            const popup = document.createElement('div');
+            popup.className = `popup-notification ${success ? 'success' : 'error'}`;
+            
+            const icon = `
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${success 
+                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>' 
+                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>'}
+                </svg>`;
+
+            popup.innerHTML = `${icon}<span>${message}</span>`;
+            document.body.appendChild(popup);
+
+            // Show the popup
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 100);
+
+            // Hide and remove the popup after 3 seconds
+            setTimeout(() => {
+                popup.classList.remove('show');
+                popup.addEventListener('transitionend', () => popup.remove());
+            }, 3000);
+        }
+
+        document.querySelectorAll('.add-to-cart').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (!isLoggedIn) {
+                    window.location.href = '/login';
+                    return;
+                }
+                const id = btn.dataset.productId;
+                const warnaString = btn.dataset.warna;
+                const ukuranString = btn.dataset.ukuran;
+
+                // Get the first available color and size as default
+                const defaultWarna = warnaString ? warnaString.split(',')[0].trim() : 'Tidak Tersedia';
+                const defaultUkuran = ukuranString ? ukuranString.split(',')[0].trim() : 'Tidak Tersedia';
+
+                const r = await postJson('/api/cart/add', { 
+                    product_id: id, 
+                    quantity: 1,
+                    warna: defaultWarna,
+                    ukuran: defaultUkuran
+                });
+
+                if (r && r.ok) {
+                    showPopup('Produk ditambahkan ke keranjang');
+                } else {
+                    showPopup(r.message || 'Gagal menambahkan ke keranjang', false);
+                }
+            });
+        });
+
+        // Delete product (admin) handler
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                if (!isLoggedIn) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const productId = btn.dataset.productId;
+                const productName = btn.dataset.productName || 'produk ini';
+
+                const confirmed = confirm(`Apakah Anda yakin ingin menghapus "${productName}"? Tindakan ini tidak dapat dibatalkan.`);
+                if (!confirmed) return;
+
+                try {
+                    const res = await fetch(`/api/products/${productId}`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'same-origin'
+                    });
+
+                    // Try parse JSON; server returns JSON on success/error
+                    const data = await res.json().catch(() => ({ ok: false, message: 'Invalid server response' }));
+
+                    if (res.ok && data.ok) {
+                        showPopup(data.message || 'Produk berhasil dihapus', true);
+                        const card = btn.closest('.product-card');
+                        if (card) card.remove();
+                    } else if (res.status === 403) {
+                        showPopup('Akses ditolak. Hanya admin yang dapat menghapus produk.', false);
+                    } else if (res.status === 401) {
+                        // Not authenticated - redirect to login
+                        window.location.href = '/login';
+                    } else {
+                        showPopup(data.message || 'Gagal menghapus produk', false);
+                    }
+                } catch (err) {
+                    console.error('Delete product error:', err);
+                    showPopup('Gagal menghapus produk (network/error).', false);
+                }
+            });
+        });
+
+        // Mobile drawer open/close
+        (function(){
+            const openBtn = document.getElementById('mobile-drawer-open');
+            const closeBtn = document.getElementById('mobile-drawer-close');
+            const drawer = document.getElementById('mobile-drawer');
+            const overlay = document.getElementById('drawer-overlay');
+
+            function show(){ overlay.classList.add('show'); drawer.classList.add('show'); overlay.classList.remove('hidden-by-js'); drawer.classList.remove('hidden-by-js'); }
+            function hide(){ overlay.classList.remove('show'); drawer.classList.remove('show'); setTimeout(()=>{ overlay.classList.add('hidden-by-js'); drawer.classList.add('hidden-by-js'); }, 300); }
+
+            let lastFocusedEl = null;
+            openBtn && openBtn.addEventListener('click', () => {
+                lastFocusedEl = document.activeElement;
+                show();
+                // move focus to first focusable in drawer
+                setTimeout(()=>{
+                    const focusable = drawer.querySelector('a,button,select,input,textarea,[tabindex]:not([tabindex="-1"])');
+                    focusable && focusable.focus();
+                }, 120);
+            });
+            closeBtn && closeBtn.addEventListener('click', hide);
+
+            // Close on overlay click
+            overlay && overlay.addEventListener('click', hide);
+
+            // Close on ESC and trap focus inside drawer
+            document.addEventListener('keydown', function(e){
+                if (!drawer.classList.contains('show')) return;
+                if (e.key === 'Escape') { hide(); if (lastFocusedEl) lastFocusedEl.focus(); }
+                if (e.key === 'Tab') {
+                    const focusable = Array.from(drawer.querySelectorAll('a,button,input,select,textarea,[tabindex]:not([tabindex="-1"])'))
+                        .filter(el => !el.hasAttribute('disabled'));
+                    if (focusable.length === 0) { e.preventDefault(); return; }
+                    const first = focusable[0];
+                    const last = focusable[focusable.length-1];
+                    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                }
+            });
+            overlay && overlay.addEventListener('click', hide);
+        })();
+
+        // Filters: category + price range (persist in localStorage)
+        (function(){
+            const SERVER_PRICE_MIN = JSON.parse('<%- JSON.stringify(typeof priceMin !== "undefined" ? Number(priceMin) : 0) %>');
+            const SERVER_PRICE_MAX = JSON.parse('<%- JSON.stringify(typeof priceMax !== "undefined" ? Number(priceMax) : 1000000) %>');
+
+            const minInput = document.getElementById('price-min');
+            const maxInput = document.getElementById('price-max');
+            const minDisplay = document.getElementById('price-min-display');
+            const maxDisplay = document.getElementById('price-max-display');
+            const categoryCheckboxes = Array.from(document.querySelectorAll('.category-filter'));
+            const applyBtn = document.getElementById('apply-filters');
+            const clearBtn = document.getElementById('clear-filters');
+
+            const storageKey = 'revorz_catalog_filters_v1';
+            const defaultState = { categories: [], min: SERVER_PRICE_MIN, max: SERVER_PRICE_MAX };
+
+            function readState(){
+                try { return JSON.parse(localStorage.getItem(storageKey)) || defaultState; } catch(e){ return defaultState; }
+            }
+
+            function writeState(s){ localStorage.setItem(storageKey, JSON.stringify(s)); }
+
+            function applyStateToUI(s){
+                categoryCheckboxes.forEach(cb => cb.checked = s.categories.includes(cb.value));
+                if(minInput && maxInput){ minInput.value = s.min; maxInput.value = s.max; }
+                if(minDisplay) minDisplay.innerText = Number(s.min).toLocaleString('id-ID');
+                if(maxDisplay) maxDisplay.innerText = Number(s.max).toLocaleString('id-ID');
+            }
+
+            function applyFilters(s){
+                const cards = Array.from(document.querySelectorAll('.product-card'));
+                cards.forEach(card => {
+                    const price = Number(card.dataset.price || 0);
+                    const cat = (card.dataset.category || '').toString();
+                    const inPrice = price >= Number(s.min) && price <= Number(s.max);
+                    const inCat = s.categories.length === 0 || s.categories.includes(cat);
+                    card.style.display = (inPrice && inCat) ? '' : 'none';
+                });
+            }
+
+            function readUIAndApply(){
+                const selCats = categoryCheckboxes.filter(c=>c.checked).map(c=>c.value);
+                const s = { categories: selCats, min: Number(minInput.value||0), max: Number(maxInput.value||1000000) };
+                writeState(s); applyFilters(s);
+            }
+
+            // init: read stored state and clamp to server bounds
+            const stored = readState();
+            const initial = {
+                categories: Array.isArray(stored.categories) ? stored.categories : [],
+                min: Math.max(SERVER_PRICE_MIN, Math.min(SERVER_PRICE_MAX, Number(stored.min || SERVER_PRICE_MIN))),
+                max: Math.max(SERVER_PRICE_MIN, Math.min(SERVER_PRICE_MAX, Number(stored.max || SERVER_PRICE_MAX)))
+            };
+            // Ensure min <= max
+            if (initial.min > initial.max) initial.min = SERVER_PRICE_MIN;
+
+            applyStateToUI(initial); applyFilters(initial);
+
+            // events
+            categoryCheckboxes.forEach(cb => cb.addEventListener('change', ()=>{ /* live-check not applied until Apply */ }));
+            minInput && minInput.addEventListener('input', ()=>{ minDisplay.innerText = Number(minInput.value).toLocaleString('id-ID'); });
+            maxInput && maxInput.addEventListener('input', ()=>{ maxDisplay.innerText = Number(maxInput.value).toLocaleString('id-ID'); });
+            applyBtn && applyBtn.addEventListener('click', ()=>{ 
+                // Persist state locally then redirect to /catalog with query params so server can filter
+                const selCats = categoryCheckboxes.filter(c=>c.checked).map(c=>c.value);
+                const s = { categories: selCats, min: Number(minInput.value||SERVER_PRICE_MIN), max: Number(maxInput.value||SERVER_PRICE_MAX) };
+                writeState(s);
+                const params = new URLSearchParams();
+                if(s.categories.length) params.set('categories', s.categories.join(','));
+                params.set('min', String(s.min));
+                params.set('max', String(s.max));
+                showPopup('Filter diterapkan', true);
+                // Close drawer if open (for UX) then navigate
+                setTimeout(()=>{ window.location.href = '/catalog?' + params.toString(); }, 250);
+            });
+            clearBtn && clearBtn.addEventListener('click', ()=>{ 
+                localStorage.removeItem(storageKey); 
+                applyStateToUI(defaultState); 
+                applyFilters(defaultState); 
+                showPopup('Filter dibersihkan', true);
+                // Navigate to /catalog without filters
+                setTimeout(()=>{ window.location.href = '/catalog'; }, 250);
+            });
+        })();
+
+        // Client-side pagination / load more (simple)
+        (function(){
+            const grid = document.querySelector('main .grid');
+            if(!grid) return;
+            const allCards = Array.from(grid.children);
+            const perPage = 12; // initial items per page
+            let current = perPage;
+
+            function update(){
+                allCards.forEach((c, idx)=>{ c.style.display = (idx < current) ? '' : 'none'; });
+                if(current >= allCards.length){
+                    if(loadMoreBtn) loadMoreBtn.style.display='none';
+                } else {
+                    if(loadMoreBtn) loadMoreBtn.style.display='inline-block';
+                }
+            }
+
+            // Create load more button
+            const loadWrap = document.createElement('div');
+            loadWrap.className = 'load-more-wrap';
+            const loadMoreBtn = document.createElement('button');
+            loadMoreBtn.className = 'btn-load-more';
+            loadMoreBtn.innerText = 'Muat Lebih Banyak';
+            loadWrap.appendChild(loadMoreBtn);
+            grid.parentNode.appendChild(loadWrap);
+
+            // initial render
+            update();
+
+            loadMoreBtn.addEventListener('click', ()=>{
+                current += perPage;
+                update();
+                // optional: smooth scroll to newly loaded area
+                setTimeout(()=>{
+                    const lastVisible = allCards[Math.min(current-1, allCards.length-1)];
+                    lastVisible && lastVisible.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 80);
+            });
+
+            // Optional infinite scroll: load when near bottom
+            let loading = false;
+            window.addEventListener('scroll', ()=>{
+                if(loading) return;
+                if((window.innerHeight + window.scrollY) >= (document.body.offsetHeight - 400)){
+                    if(current < allCards.length){ loading = true; current += perPage; update(); setTimeout(()=> loading=false, 600); }
+                }
+            });
+        })();
+            </script>
+
+</body>
+</html>

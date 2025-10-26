@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Pengguna - Admin REVOZ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/global.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb,  #f9fdff, #b8dcff, #85dcff);
+            min-height: 100vh;
+        }
+        .table-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+        .role-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .role-user {
+            background-color: #e0f2fe; /* blue-100 */
+            color: #2563eb; /* blue-600 */
+        }
+        .role-admin {
+            background-color: #fef3c7; /* amber-100 */
+            color: #b45309; /* amber-700 */
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-md shadow-md py-4">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <a href="/" class="flex items-center space-x-2">
+                <img src="/image/Logo.png" alt="REVOZ Logo" class="h-14 w-auto">
+                <span class="text-2xl font-bold text-blue-600">REVOZ</span>
+            </a>
+            <nav class="hidden md:flex space-x-6 ml-8">
+                <a href="/admin/dashboard" class="text-gray-600 hover:text-blue-600 transition duration-300">Dashboard</a>
+                <a href="/admin/orders" class="text-gray-600 hover:text-blue-600 transition duration-300">Pesanan</a>
+                <a href="/admin/users" class="text-blue-600 font-semibold border-b-2 border-blue-600 transition duration-300">Pengguna</a>
+                <a href="/catalog" class="text-gray-600 hover:text-blue-600 transition duration-300">Katalog</a>
+                <a href="/category" class="text-gray-600 hover:text-blue-600 transition duration-300">Kategori</a>
+                <a href="/admin/add-product" class="text-gray-600 hover:text-blue-600 transition duration-300">Tambah Produk</a>
+            </nav>
+            <div class="flex-1 flex justify-center px-8">
+                <form action="/category" method="get" class="w-full max-w-lg">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <input class="search-input w-full pl-10 pr-4 py-2 rounded-full text-gray-700 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" name="q" placeholder="Cari produk...">
+                    </div>
+                </form>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/cart" class="relative text-gray-600 hover:text-blue-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z" /></svg>
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1"><%= cartItemCount %></span>
+                </a>
+                <% if (isLoggedIn) { %>
+                    <div class="flex items-center space-x-2">
+                        <% if (profilePicture) { %>
+                            <img src="<%= profilePicture %>" alt="Profile" class="w-8 h-8 rounded-full object-cover border-2 border-blue-500">
+                        <% } else { %>
+                            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm">
+                                <%= username.charAt(0).toUpperCase() %>
+                            </div>
+                        <% } %>
+                        <a href="/profile" class="text-gray-600 hover:text-blue-600 transition duration-300">Halo, <%= username %></a>
+                    </div>
+                    <a href="/logout" class="text-gray-600 hover:text-blue-600 ml-4">Logout</a>
+                <% } else { %>
+                    <a href="/login" class="text-gray-600 hover:text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto py-8 px-4">
+        <h1 class="text-3xl font-bold mb-8">Manajemen Pengguna</h1>
+
+        <div class="table-container">
+            <% if (users && users.length > 0) { %>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Pengguna</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bergabung Sejak</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <% users.forEach(user => { %>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap"><%= user.id %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><%= user.username %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="role-badge role-<%= user.role %>"><%= user.role %></span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><%= new Date(user.created_at).toLocaleDateString('id-ID') %></td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <button class="edit-user-btn text-indigo-600 hover:text-indigo-800 font-medium mr-3" data-user-id="<%= user.id %>" data-username="<%= user.username %>" data-role="<%= user.role %>">Edit</button>
+                                        <button class="delete-user-btn text-red-600 hover:text-red-800 font-medium" data-user-id="<%= user.id %>" data-username="<%= user.username %>">Hapus</button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } else { %>
+                <div class="text-center py-12 text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h2a2 2 0 002-2V7a2 2 0 00-2-2h-2M10 9V4a2 2 0 012-2h2a2 2 0 012 2v5m-4 0h4m-4 0a2 2 0 01-2-2V4a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2h2" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-medium text-gray-800">Tidak Ada Pengguna</h3>
+                    <p class="mt-1 text-sm text-gray-600">Tidak ada pengguna yang terdaftar saat ini.</p>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 m-4 max-w-md w-full">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Edit Pengguna: <span id="modal-edit-username"></span></h2>
+                <button id="close-edit-user-modal" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+            </div>
+            <form id="edit-user-form">
+                <input type="hidden" id="modal-edit-user-id">
+                <div class="mb-4">
+                    <label for="modal-edit-role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                    <select id="modal-edit-role" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete User Confirmation Modal -->
+    <div id="delete-user-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl p-8 m-4 max-w-sm w-full text-center">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Hapus Pengguna</h2>
+                <button id="close-delete-user-modal" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+            </div>
+            <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus pengguna <span id="modal-delete-username" class="font-semibold"></span>? Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-delete-user-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Hapus</button>
+                <button id="cancel-delete-user-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="container mx-auto text-center px-4">
+            <p>&copy; 2025 REVOZ. Semua Hak Dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        async function postJson(url, body) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            return res.json();
+        }
+
+        // Edit User Modal Logic
+        const editUserModal = document.getElementById('edit-user-modal');
+        const closeEditUserModalBtn = document.getElementById('close-edit-user-modal');
+        const editUserForm = document.getElementById('edit-user-form');
+        const modalEditUserId = document.getElementById('modal-edit-user-id');
+        const modalEditUsername = document.getElementById('modal-edit-username');
+        const modalEditRole = document.getElementById('modal-edit-role');
+
+        document.querySelectorAll('.edit-user-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const userId = e.target.dataset.userId;
+                const username = e.target.dataset.username;
+                const role = e.target.dataset.role;
+
+                modalEditUserId.value = userId;
+                modalEditUsername.textContent = username;
+                modalEditRole.value = role;
+                editUserModal.classList.remove('hidden');
+            });
+        });
+
+        closeEditUserModalBtn.addEventListener('click', () => {
+            editUserModal.classList.add('hidden');
+        });
+
+        editUserModal.addEventListener('click', (e) => {
+            if (e.target === editUserModal) {
+                editUserModal.classList.add('hidden');
+            }
+        });
+
+        editUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const userId = modalEditUserId.value;
+            const newRole = modalEditRole.value;
+
+            const response = await postJson(`/api/admin/users/${userId}/update-role`, { role: newRole });
+
+            if (response.ok) {
+                alert('Role pengguna berhasil diupdate!');
+                editUserModal.classList.add('hidden');
+                location.reload();
+            } else {
+                alert('Gagal mengupdate role pengguna: ' + (response.message || 'Terjadi kesalahan.'));
+            }
+        });
+
+        // Delete User Modal Logic
+        const deleteUserModal = document.getElementById('delete-user-modal');
+        const closeDeleteUserModalBtn = document.getElementById('close-delete-user-modal');
+        const modalDeleteUsername = document.getElementById('modal-delete-username');
+        const confirmDeleteUserBtn = document.getElementById('confirm-delete-user-btn');
+        const cancelDeleteUserBtn = document.getElementById('cancel-delete-user-btn');
+        let userToDeleteId = null;
+
+        document.querySelectorAll('.delete-user-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                userToDeleteId = e.target.dataset.userId;
+                const username = e.target.dataset.username;
+                modalDeleteUsername.textContent = username;
+                deleteUserModal.classList.remove('hidden');
+            });
+        });
+
+        closeDeleteUserModalBtn.addEventListener('click', () => {
+            deleteUserModal.classList.add('hidden');
+        });
+
+        cancelDeleteUserBtn.addEventListener('click', () => {
+            deleteUserModal.classList.add('hidden');
+        });
+
+        deleteUserModal.addEventListener('click', (e) => {
+            if (e.target === deleteUserModal) {
+                deleteUserModal.classList.add('hidden');
+            }
+        });
+
+        confirmDeleteUserBtn.addEventListener('click', async () => {
+            const response = await postJson(`/api/admin/users/${userToDeleteId}/delete`, {});
+
+            if (response.ok) {
+                alert('Pengguna berhasil dihapus!');
+                deleteUserModal.classList.add('hidden');
+                location.reload();
+            } else {
+                alert('Gagal menghapus pengguna: ' + (response.message || 'Terjadi kesalahan.'));
+            }
+        });
+    </script>
+
+</body>
+</html>

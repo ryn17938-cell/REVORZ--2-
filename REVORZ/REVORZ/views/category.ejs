@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Katalog Produk - Kategori</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/global.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white bg-opacity-90 shadow-lg py-4 backdrop-blur-md sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <a href="/" class="flex items-center space-x-3 text-3xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
+                <img src="/image/Logo.png" alt="REVOZ Logo" class="h-16 w-16 object-contain">
+                <span>REVOZ</span>
+            </a>
+            <nav class="hidden md:flex space-x-6 ml-8">
+                <a href="/" class="text-gray-600 hover:text-blue-600 transition duration-300">Beranda</a>
+                <a href="/catalog" class="text-gray-600 hover:text-blue-600 transition duration-300">Katalog</a>
+                <a href="/category" class="text-blue-600 font-semibold border-b-2 border-blue-600 transition duration-300">Kategori</a>
+                <a href="/about" class="text-gray-600 hover:text-blue-600 transition duration-300">Tentang Kami</a>
+                <a href="/contact" class="text-gray-600 hover:text-blue-600 transition duration-300">Kontak</a>
+                <% if (role === 'admin') { %>
+                    <a href="/admin/add-product" class="text-gray-600 hover:text-blue-600 transition duration-300">Tambah Produk</a>
+                <% } %>
+            </nav>
+
+            <!-- Search Bar -->
+            <div class="flex-1 flex justify-center px-8">
+                <form action="/category" method="get" class="w-full max-w-lg">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <input class="search-input w-full pl-10 pr-4 py-2 rounded-full text-gray-700 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" name="q" placeholder="Cari produk...">
+                    </div>
+                </form>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/cart" class="relative text-gray-600 hover:text-blue-600 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z" /></svg>
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1"><%= cartItemCount %></span>
+                </a>
+                <% if (isLoggedIn) { %>
+                    <div class="flex items-center space-x-2">
+                        <% if (profilePicture) { %>
+                            <img src="<%= profilePicture %>" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                        <% } else { %>
+                            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm"><%= username.charAt(0).toUpperCase() %></div>
+                        <% } %>
+                        <a href="/profile" class="text-gray-600 hover:text-blue-600 font-medium">Halo, <%= username %></a>
+                    </div>
+                    <a href="/logout" class="text-red-600 hover:text-red-700 font-medium">Logout</a>
+                <% } else { %>
+                    <a href="/login" class="text-gray-600 hover:text-blue-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto py-8 px-4">
+        <div class="text-center mb-10">
+            <% if (filters.q) { %>
+                <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight">Hasil Pencarian untuk "<%= filters.q %>"</h1>
+            <% } else { %>
+                <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight">Semua Produk</h1>
+            <% } %>
+            <p class="mt-3 text-lg text-gray-600">Urutkan produk sesuai keinginan Anda.</p>
+        </div>
+
+        <section class="w-full">
+            <form id="filter-form" action="/category" method="GET" class="bg-white p-4 rounded-lg shadow-md mb-6">
+            <form id="filter-form" action="/category" method="GET" class="bg-white p-4 rounded-lg shadow-md mb-6">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <!-- Search Bar -->
+                    <div class="w-full md:w-2/5">
+                        <input type="search" name="q" placeholder="Cari produk dalam kategori ini..." class="w-full border-gray-300 border rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500" value="<%= filters.q || '' %>">
+                    </div>
+                    
+                    <!-- Brand Filter -->
+                    <div class="flex items-center w-full md:w-auto">
+                        <label for="brand" class="mr-2 text-gray-600 flex-shrink-0">Merek:</label>
+                        <select name="brand" id="brand" class="w-full md:w-48 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500" onchange="document.getElementById('filter-form').submit();">
+                            <option value="">Semua</option>
+                            <% uniqueBrands.forEach(b => { %>
+                                <option value="<%= b %>" <%= filters.brand === b ? 'selected' : '' %>><%= b %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <!-- Rating Filter -->
+                    <div class="flex items-center w-full md:w-auto">
+                        <label for="min_rating" class="mr-2 text-gray-600 flex-shrink-0">Min. Rating:</label>
+                        <select name="min_rating" id="min_rating" class="w-full md:w-32 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500" onchange="document.getElementById('filter-form').submit();">
+                            <option value="">Semua</option>
+                            <% for (let i = 1; i <= 5; i++) { %>
+                                <option value="<%= i %>" <%= filters.min_rating == i ? 'selected' : '' %>><%= i %> Bintang</option>
+                            <% } %>
+                        </select>
+                    </div>
+
+                    <!-- Sorting -->
+                    <div class="flex items-center w-full md:w-auto">
+                        <label for="sort" class="mr-2 text-gray-600 flex-shrink-0">Urutkan:</label>
+                        <div class="relative" id="sort-dropdown">
+                            <input type="hidden" name="sort" id="sort-value" value="<%= filters.sort || '' %>">
+                            <button type="button" id="sort-button" class="flex items-center justify-between w-full md:w-56 border border-gray-300 rounded-md p-2 bg-white shadow-sm">
+                                <span id="sort-label">Terbaru</span>
+                                <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                            </button>
+                            <div id="sort-options" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                                <div class="py-1" role="menu" aria-orientation="vertical">
+                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="">Terbaru</a>
+                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="price_desc">Harga Tertinggi</a>
+                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="price_asc">Harga Terendah</a>
+                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="name_asc">Nama: A-Z</a>
+                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="name_desc">Nama: Z-A</a>
+                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="rating_desc">Rating Tertinggi</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="hidden">Submit</button> 
+            </form>
+
+            <div class="mb-6 text-gray-600">
+                <span>Menampilkan <%= products.length %> dari <%= pagination.totalProducts %> produk</span>
+            </div>
+
+            <% if (products.length) { %>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <% products.forEach(p => { %>
+                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden">
+                            <a href="/product/<%= p.id %>">
+                                <img src="<%= p.image || '/image/katalog.png' %>" alt="<%= p.name %>" class="w-full h-48 object-cover">
+                            </a>
+                            <div class="p-4">
+                                <h3 class="product-title"><a href="/product/<%= p.id %>" class="hover:text-blue-600"><%- highlightSearchTerm(p.name, filters.q) %></a></h3>
+                                <p class="product-description"><%- highlightSearchTerm((p.description || 'Deskripsi produk tidak tersedia.').replace(/<[^>]+>/g, ''), filters.q) %></p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-blue-600 font-bold text-lg">Rp <%= p.price.toLocaleString('id-ID') %></span>
+                                    <a href="/product/<%= p.id %>" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-full text-xs transition duration-300">Detail</a>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <div class="text-center py-16 bg-white rounded-lg shadow-md">
+                    <h2 class="text-2xl font-semibold text-gray-700">Tidak Ada Produk</h2>
+                    <p class="text-gray-500 mt-2">Tidak ada produk yang ditemukan.</p>
+                </div>
+            <% } %>
+
+            <!-- Pagination -->
+            <div class="flex justify-center mt-8 space-x-2">
+                <% if (pagination.totalPages > 1) { %>
+                    <% 
+                    const urlParams = new URLSearchParams(filters);
+                    %> 
+                    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                        <% 
+                        urlParams.set('page', i);
+                        const queryString = urlParams.toString();
+                        %> 
+                        <a href="?<%= queryString %>" 
+                           class="<%= pagination.page === i ? 'bg-blue-600 text-white' : 'bg-white text-gray-700' %> px-4 py-2 rounded-lg hover:bg-blue-700 hover:text-white transition-colors duration-200 border border-gray-300">
+                            <%= i %>
+                        </a>
+                    <% } %>
+                <% } %>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto text-center px-4">
+            <p>&copy; 2025 REVOZ. Semua Hak Dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        const sortDropdown = document.getElementById('sort-dropdown');
+        const sortButton = document.getElementById('sort-button');
+        const sortOptions = document.getElementById('sort-options');
+        const sortLabel = document.getElementById('sort-label');
+        const sortValueInput = document.getElementById('sort-value');
+
+        // Set initial label based on current filter
+        const initialSortValue = '<%= filters.sort || "" %>';
+        const initialSortOption = document.querySelector(`.sort-option[data-value="${initialSortValue}"]`);
+        if (initialSortOption) {
+            sortLabel.textContent = initialSortOption.textContent;
+        }
+
+        // Toggle dropdown
+        sortButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sortOptions.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!sortDropdown.contains(e.target)) {
+                sortOptions.classList.add('hidden');
+            }
+        });
+
+        // Handle option selection
+        document.querySelectorAll('.sort-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.preventDefault();
+                const selectedValue = e.target.dataset.value;
+                
+                sortValueInput.value = selectedValue;
+                
+                document.getElementById('filter-form').submit();
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Daftar - REVOZ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/global.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-image: url('/image/katalog.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Dark overlay */
+            backdrop-filter: blur(8px); /* Blur effect */
+            z-index: -1;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            width: 850px;
+            max-width: 95%;
+            min-height: 550px;
+            display: flex;
+            z-index: 1;
+        }
+
+        .form-container {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            transition: all 0.6s ease-in-out;
+            background-color: #ffffff;
+            padding: 0 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .sign-in-container {
+            left: 0;
+            z-index: 2;
+        }
+
+        .sign-up-container {
+            left: 0;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .overlay-container {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            transition: transform 0.6s ease-in-out;
+            z-index: 100;
+        }
+
+        .overlay {
+            background: linear-gradient(135deg, #2b6cb0 0%, #4299e1 100%); /* Blue gradient for overlay */
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: 0 0;
+            color: #FFFFFF;
+            position: relative;
+            left: -100%;
+            height: 100%;
+            width: 200%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .overlay-panel {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 0 40px;
+            text-align: center;
+            top: 0;
+            height: 100%;
+            width: 50%;
+            transform: translateX(0);
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .overlay-left {
+            transform: translateX(-20%);
+        }
+
+        .overlay-right {
+            right: 0;
+            transform: translateX(0);
+        }
+
+        /* Animation */
+        .container.right-panel-active .sign-in-container {
+            transform: translateX(100%);
+        }
+
+        .container.right-panel-active .sign-up-container {
+            transform: translateX(100%);
+            opacity: 1;
+            z-index: 5;
+            animation: show 0.6s;
+        }
+
+        @keyframes show {
+            0%, 49.99% {
+                opacity: 0;
+                z-index: 1;
+            }
+            50%, 100% {
+                opacity: 1;
+                z-index: 5;
+            }
+        }
+
+        .container.right-panel-active .overlay-container {
+            transform: translateX(-100%);
+        }
+
+        .container.right-panel-active .overlay {
+            transform: translateX(50%);
+        }
+
+        .container.right-panel-active .overlay-left {
+            transform: translateX(0);
+        }
+
+        .container.right-panel-active .overlay-right {
+            transform: translateX(20%);
+        }
+
+        /* Form elements */
+        .social-container {
+            margin: 20px 0;
+        }
+
+        .social-container a {
+            border: 1px solid #DDDDDD;
+            border-radius: 50%;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 5px;
+            height: 40px;
+            width: 40px;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+
+        .social-container a:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .form-input-group {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-input-group input {
+            background-color: #f5f5f5;
+            border: 1px solid #e0e0e0;
+            padding: 12px 15px 12px 45px;
+            margin: 0;
+            width: 100%;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .form-input-group input:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.3);
+            background-color: #ffffff;
+        }
+
+        .form-input-group .icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #a0a0a0;
+            font-size: 18px;
+        }
+
+        .form-input-group .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #a0a0a0;
+        }
+
+        .form-button {
+            border-radius: 25px;
+            border: 1px solid #4299e1;
+            background: linear-gradient(45deg, #4299e1 0%, #2b6cb0 100%);
+            color: #FFFFFF;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 12px 45px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: transform 80ms ease-in, box-shadow 0.3s ease;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .form-button:active {
+            transform: scale(0.95);
+        }
+
+        .form-button:focus {
+            outline: none;
+        }
+
+        .ghost-button {
+            background-color: transparent;
+            border-color: #FFFFFF;
+            box-shadow: none;
+        }
+
+        .ghost-button:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: #FFFFFF;
+            transform: translateY(-3px);
+        }
+
+        .forgot-password-link {
+            color: #6b7280;
+            font-size: 14px;
+            margin: 15px 0;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password-link:hover {
+            color: #4299e1;
+            text-decoration: underline;
+        }
+
+        h1 {
+            font-weight: 700;
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        p {
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 20px;
+            letter-spacing: 0.5px;
+            margin: 20px 0 30px;
+        }
+
+        span {
+            font-size: 12px;
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            text-align: left;
+            width: 100%;
+        }
+
+        /* Custom Popup Notification */
+        .custom-popup {
+            position: fixed;
+            top: 2rem; /* top-8 */
+            right: 2rem; /* right-8 */
+            transform: translateX(120%); /* Start off-screen to the right */
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .custom-popup.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0); /* Slide in from right */
+        }
+        .custom-popup.success {
+            background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+        }
+        .custom-popup.error {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+        .custom-popup .icon {
+            width: 24px;
+            height: 24px;
+        }
+        .custom-popup .message {
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="container">
+    <!-- Sign Up Form -->
+    <div class="form-container sign-up-container">
+        <form action="/register" method="POST" class="bg-white flex items-center justify-center flex-col px-12 h-full text-center" id="signUpForm">
+            <img src="/image/Logo.png" alt="Logo" class="w-20 mb-4">
+            <h1 class="font-bold text-3xl mb-6 text-gray-800">Buat Akun</h1>
+            <div class="social-container">
+                <a href="#" class="social"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm3 8h-1.35c-.538 0-.65.221-.65.778v2.122h3l-.357 3h-2.643v7h-3v-7h-3v-3h3v-2.195c0-3.592 1.364-5.805 5.947-5.805h3.053v3zm-1.233 1.5h-.767c-.276 0-.5.224-.5.5v1.5h2.5l-.25 2h-2.25v6h-2v-6h-2v-2h2v-1.5c0-.828.672-1.5 1.5-1.5h.767c.276 0 .5.224.5.5v.5z"/></svg></a>
+                <a href="#" class="social"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.493-1.1-1.1s.493-1.1 1.1-1.1 1.1.493 1.1 1.1-.493 1.1-1.1 1.1zm7 6.891h-2v-3.5c0-.811-.486-1.45-1.293-1.45-.658 0-1.137.438-1.324.856-.06.117-.09.25-.09.384v3.71h-2v1.735c.637-1.157 1.919-1.885 3.364-1.885 2.342 0 4.136 1.548 4.136 4.879v4.311z"/></svg></a>
+                <a href="#" class="social"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.493-1.1-1.1s.493-1.1 1.1-1.1 1.1.493 1.1 1.1-.493 1.1-1.1 1.1zm7 6.891h-2v-3.5c0-.811-.486-1.45-1.293-1.45-.658 0-1.137.438-1.324.856-.06.117-.09.25-.09.384v3.71h-2v1.735c.637-1.157 1.919-1.885 3.364-1.885 2.342 0 4.136 1.548 4.136 4.879v4.311z"/></svg></a>
+            </div>
+            <span class="text-gray-500 text-sm mb-4">atau gunakan email Anda untuk pendaftaran</span>
+            <div class="form-input-group">
+                <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg></span>
+                <input type="text" name="username" placeholder="Username" class="form-input" required />
+            </div>
+            <div class="form-input-group">
+                <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg></span>
+                <input type="password" name="password" id="registerPassword" placeholder="Password" class="form-input" required />
+                <span class="toggle-password" data-target="registerPassword"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg></span>
+            </div>
+            <div class="form-input-group">
+                <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg></span>
+                <input type="password" name="confirm-password" id="confirmPassword" placeholder="Konfirmasi Password" class="form-input" required />
+                <span class="toggle-password" data-target="confirmPassword"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg></span>
+            </div>
+            <p id="passwordMatchError" class="error-message hidden">Password tidak cocok!</p>
+            <button type="submit" class="form-button mt-4">Daftar</button>
+        </form>
+    </div>
+
+    <!-- Sign In Form -->
+    <div class="form-container sign-in-container">
+        <form action="/login" method="POST" class="bg-white flex items-center justify-center flex-col px-12 h-full text-center" id="signInForm">
+            <img src="/image/Logo.png" alt="Logo" class="w-20 mb-4">
+            <h1 class="font-bold text-3xl mb-6 text-gray-800">Masuk</h1>
+            <div class="social-container">
+                <a href="#" class="social"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm3 8h-1.35c-.538 0-.65.221-.65.778v2.122h3l-.357 3h-2.643v7h-3v-7h-3v-3h3v-2.195c0-3.592 1.364-5.805 5.947-5.805h3.053v3zm-1.233 1.5h-.767c-.276 0-.5.224-.5.5v1.5h2.5l-.25 2h-2.25v6h-2v-6h-2v-2h2v-1.5c0-.828.672-1.5 1.5-1.5h.767c.276 0 .5.224.5.5v.5z"/></svg></a>
+                <a href="#" class="social"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.493-1.1-1.1s.493-1.1 1.1-1.1 1.1.493 1.1 1.1-.493 1.1-1.1 1.1zm7 6.891h-2v-3.5c0-.811-.486-1.45-1.293-1.45-.658 0-1.137.438-1.324.856-.06.117-.09.25-.09.384v3.71h-2v1.735c.637-1.157 1.919-1.885 3.364-1.885 2.342 0 4.136 1.548 4.136 4.879v4.311z"/></svg></a>
+                <a href="#" class="social"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.493-1.1-1.1s.493-1.1 1.1-1.1 1.1.493 1.1 1.1-.493 1.1-1.1 1.1zm7 6.891h-2v-3.5c0-.811-.486-1.45-1.293-1.45-.658 0-1.137.438-1.324.856-.06.117-.09.25-.09.384v3.71h-2v1.735c.637-1.157 1.919-1.885 3.364-1.885 2.342 0 4.136 1.548 4.136 4.879v4.311z"/></svg></a>
+            </div>
+            <span class="text-gray-500 text-sm mb-4">atau gunakan akun Anda</span>
+            <div class="form-input-group">
+                <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg></span>
+                <input type="text" name="username" placeholder="Username" class="form-input" required />
+            </div>
+            <div class="form-input-group">
+                <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg></span>
+                <input type="password" name="password" id="loginPassword" placeholder="Password" class="form-input" required />
+                <span class="toggle-password" data-target="loginPassword"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg></span>
+            </div>
+            <a href="#" id="forgotPasswordLink" class="forgot-password-link">Lupa password Anda?</a>
+            <button type="submit" class="form-button">Masuk</button>
+        </form>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay-container">
+        <div class="overlay">
+            <!-- Sign In Overlay -->
+            <div class="overlay-panel overlay-left">
+                <img src="/image/Logo.png" alt="Logo" class="w-24 mb-6 invert brightness-0">
+                <h1 class="font-bold text-4xl mb-3">Selamat Datang Kembali!</h1>
+                <p class="text-sm font-light leading-5 tracking-wider mb-8">Untuk tetap terhubung dengan kami, silakan masuk dengan info pribadi Anda</p>
+                <button class="form-button ghost-button" id="signIn">Masuk</button>
+            </div>
+            <!-- Sign Up Overlay -->
+            <div class="overlay-panel overlay-right">
+                <img src="/image/Logo.png" alt="Logo" class="w-24 mb-6 invert brightness-0">
+                <h1 class="font-bold text-4xl mb-3">Halo, Teman!</h1>
+                <p class="text-sm font-light leading-5 tracking-wider mb-8">Masukkan detail pribadi Anda dan mulailah perjalanan dengan kami</p>
+                <button class="form-button ghost-button" id="signUp">Daftar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="forgotPasswordModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden" style="z-index: 9999;">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md" role="dialog" aria-modal="true">
+        <h2 class="text-2xl font-bold text-center mb-4">Lupa Password</h2>
+        <p class="text-center text-gray-600 mb-6">Masukkan username Anda untuk mengatur ulang password.</p>
+            <form id="forgotPasswordForm">
+                <div id="step1">
+                    <div class="form-input-group">
+                        <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg></span>
+                        <input type="text" id="forgotUsername" placeholder="Username" class="form-input" required />
+                    </div>
+                    <p id="forgotError" class="error-message hidden"></p>
+                    <div class="flex items-center justify-end mt-6 space-x-4">
+                        <button type="button" id="cancelForgotPassword" class="text-gray-600 hover:text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200">Batal</button>
+                        <button type="submit" class="form-button">Lanjutkan</button>
+                    </div>
+                </div>
+
+                <div id="step2" class="hidden">
+                    <p class="text-sm text-gray-700 mb-4">Kami menemukan nomor terdaftar: <span id="maskedNomor" class="font-bold"></span></p>
+                    <div class="form-input-group">
+                        <span class="icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" /></svg></span>
+                        <!-- removed `required` to avoid browser validation blocking hidden multi-step form submission -->
+                        <input type="text" id="verifyDigits" placeholder="Masukkan 3 digit terakhir nomor" class="form-input" />
+                    </div>
+                    <p id="verifyError" class="error-message hidden"></p>
+                    <div class="flex items-center justify-end mt-6 space-x-4">
+                        <button type="button" id="backToStep1" class="text-gray-600 hover:text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200">Kembali</button>
+                        <button type="button" id="submitVerify" class="form-button">Verifikasi</button>
+                    </div>
+                </div>
+            </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Defensive DOM lookups: guard against missing elements so one error doesn't break everything
+        try {
+            const signUpButton = document.getElementById('signUp');
+            const signInButton = document.getElementById('signIn');
+            const container = document.getElementById('container');
+
+            if (signUpButton && container) {
+                signUpButton.addEventListener('click', () => {
+                    container.classList.add("right-panel-active");
+                });
+            }
+
+            if (signInButton && container) {
+                signInButton.addEventListener('click', () => {
+                    container.classList.remove("right-panel-active");
+                });
+            }
+        } catch (err) {
+            console.error('Error initializing sign up/in buttons', err);
+        }
+
+        // Password toggle functionality (guarded)
+        try {
+            const toggles = document.querySelectorAll('.toggle-password');
+            if (toggles && toggles.length) {
+                toggles.forEach(toggle => {
+                    toggle.addEventListener('click', function () {
+                        const targetId = this.dataset.target;
+                        const passwordInput = document.getElementById(targetId);
+                        if (!passwordInput) return;
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414L5.586 8H4a1 1 0 000 2h1.586l-2.293 2.293a1 1 0 001.414 1.414L8 11.414V13a1 1 0 102 0v-1.586l2.293 2.293a1 1 0 001.414-1.414L11.414 10H13a1 1 0 100-2h-1.586l2.293-2.293a1 1 0 00-1.414-1.414L10 8.586V7a1 1 0 10-2 0v1.586L3.707 2.293zM10 12a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>';
+                        } else {
+                            passwordInput.type = 'password';
+                            this.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>';
+                        }
+                    });
+                });
+            }
+        } catch (err) {
+            console.error('Error initializing password toggles', err);
+        }
+
+        // Password verification for registration form
+        const signUpForm = document.getElementById('signUpForm');
+        const registerPassword = document.getElementById('registerPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const passwordMatchError = document.getElementById('passwordMatchError');
+        if (signUpForm) {
+            signUpForm.addEventListener('submit', function(event) {
+                if (registerPassword && confirmPassword && registerPassword.value !== confirmPassword.value) {
+                    if (passwordMatchError) passwordMatchError.classList.remove('hidden');
+                    event.preventDefault(); // Prevent form submission
+                } else {
+                    if (passwordMatchError) passwordMatchError.classList.add('hidden');
+                }
+            });
+        }
+
+            // Forgot Password Modal Logic
+            const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+            const cancelForgotPasswordBtn = document.getElementById('cancelForgotPassword');
+            const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        
+            // Custom Popup Function (copied from profile.ejs)
+            function showCustomPopup(message, success = true) {
+                const popup = document.getElementById('custom-popup');
+                if (!popup) return;
+                const iconContainer = popup.querySelector('.icon');
+                const messageContainer = popup.querySelector('.message');
+                
+                messageContainer.textContent = message;
+                popup.classList.remove('success', 'error');
+                
+                if (success) {
+                    popup.classList.add('success');
+                    iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                } else {
+                    popup.classList.add('error');
+                    iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+                }
+        
+                popup.classList.add('show');
+                setTimeout(() => popup.classList.remove('show'), 3000);
+            }
+        
+            if (forgotPasswordLink && forgotPasswordModal) {
+                forgotPasswordLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    forgotPasswordModal.classList.remove('hidden');
+                });
+            }
+            if (cancelForgotPasswordBtn && forgotPasswordModal) {
+                cancelForgotPasswordBtn.addEventListener('click', () => {
+                    forgotPasswordModal.classList.add('hidden');
+                });
+            }
+
+            // New forgot-password flow: step1 -> step2 -> verify
+            const forgotError = document.getElementById('forgotError');
+            const verifyError = document.getElementById('verifyError');
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const maskedNomorEl = document.getElementById('maskedNomor');
+            const verifyDigitsInput = document.getElementById('verifyDigits');
+            const submitVerifyBtn = document.getElementById('submitVerify');
+            const backToStep1Btn = document.getElementById('backToStep1');
+
+            if (forgotPasswordForm) forgotPasswordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                forgotError.classList.add('hidden');
+                const username = document.getElementById('forgotUsername').value.trim();
+                if (!username) {
+                    forgotError.textContent = 'Masukkan username.';
+                    forgotError.classList.remove('hidden');
+                    return;
+                }
+
+                // Call init endpoint
+                try {
+                    const res = await fetch('/api/user/forgot-init', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                        forgotError.textContent = data.message || 'Gagal mencari username.';
+                        forgotError.classList.remove('hidden');
+                        return;
+                    }
+
+                    if (!data.hasNomor) {
+                        forgotError.textContent = data.message || 'Tidak ada nomor terdaftar pada akun ini.';
+                        forgotError.classList.remove('hidden');
+                        return;
+                    }
+
+                    // Show masked nomor and go to step 2
+                    maskedNomorEl.textContent = data.maskedNomor || '•••';
+                    step1.classList.add('hidden');
+                    step2.classList.remove('hidden');
+                } catch (err) {
+                    console.error('Forgot init error', err);
+                    forgotError.textContent = 'Terjadi kesalahan jaringan.';
+                    forgotError.classList.remove('hidden');
+                }
+            });
+
+            if (backToStep1Btn) backToStep1Btn.addEventListener('click', () => {
+                step2.classList.add('hidden');
+                step1.classList.remove('hidden');
+                verifyError.classList.add('hidden');
+                verifyDigitsInput.value = '';
+            });
+            if (submitVerifyBtn) submitVerifyBtn.addEventListener('click', async () => {
+                verifyError.classList.add('hidden');
+                const username = document.getElementById('forgotUsername').value.trim();
+                const verifyDigits = verifyDigitsInput.value.trim();
+                if (!verifyDigits) {
+                    verifyError.textContent = 'Masukkan digit verifikasi.';
+                    verifyError.classList.remove('hidden');
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/api/user/forgot-verify', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, verifyDigits })
+                    });
+                    const data = await res.json();
+                    if (!res.ok) {
+                        verifyError.textContent = data.message || 'Verifikasi gagal.';
+                        verifyError.classList.remove('hidden');
+                        return;
+                    }
+
+                    // On success, redirect to reset page
+                    window.location.href = `/reset-password?username=${encodeURIComponent(username)}`;
+                } catch (err) {
+                    console.error('Forgot verify error', err);
+                    verifyError.textContent = 'Terjadi kesalahan jaringan.';
+                    verifyError.classList.remove('hidden');
+                }
+            });
+            
+                // Sign In Form AJAX Submission
+                const signInForm = document.getElementById('signInForm');
+            
+                signInForm.addEventListener('submit', async function(event) {
+                    event.preventDefault();
+            
+                    const formData = new FormData(signInForm);
+                    const data = Object.fromEntries(formData.entries());
+            
+                    const response = await fetch('/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+            
+                    const result = await response.json();
+            
+                            if (response.ok && result.ok) {
+                                window.location.href = result.redirectUrl;
+                            } else {
+                                showCustomPopup(result.message, false);
+                            }                });
+            });</script>
+
+<!-- Custom Popup Notification -->
+<div id="custom-popup" class="custom-popup">
+    <div class="icon"></div>
+    <div class="message"></div>
+</div>
+
+</body>
+</html>

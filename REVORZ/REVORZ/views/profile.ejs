@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Saya - REVOZ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/global.min.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb,  #f9fdff, #b8dcff, #85dcff);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .mobile-menu {
+            display: none;
+        }
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        /* Enhanced Profile Card */
+        .profile-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.6s;
+        }
+        .profile-card:hover::before {
+            left: 100%;
+        }
+        .profile-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        /* Avatar with Glow Effect */
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+            transition: all 0.4s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+        .profile-avatar::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            opacity: 0.3;
+            z-index: -1;
+            filter: blur(10px);
+        }
+        .profile-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 45px rgba(102, 126, 234, 0.4);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Enhanced Stat Cards */
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
+            border-radius: 20px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #1e40af, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            display: block;
+            animation: countUp 2s ease-out;
+        }
+        .stat-label {
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Enhanced Buttons */
+        .action-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: none;
+            cursor: pointer;
+        }
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .action-btn:hover::before {
+            left: 100%;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .secondary-btn {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #374151;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .secondary-btn:hover {
+            background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .danger-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        .danger-btn:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Activity Section */
+        .activity-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid #3b82f6;
+        }
+        .activity-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-waiting {
+            background-color: #fef3c7; /* amber-100 */
+            color: #b45309; /* amber-700 */
+        }
+        .status-approved {
+            background-color: #d1fae5; /* green-100 */
+            color: #047857; /* green-700 */
+        }
+        .status-rejected {
+            background-color: #fee2e2; /* red-100 */
+            color: #b91c1c; /* red-700 */
+        }
+
+        /* Scroll Animations */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+        .fade-in-up.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Role Badge */
+        .role-badge {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .role-badge.admin {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Info Items */
+        .info-item {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05));
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .info-item:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+            transform: translateX(5px);
+        }
+
+        /* Custom Select Dropdown */
+        .custom-select-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        .custom-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #f9fafb; /* gray-50 */
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 12px;
+            padding: 0.6rem 2.5rem 0.6rem 1rem;
+            font-weight: 600;
+            color: #374151; /* gray-700 */
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .custom-select:hover {
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        .custom-select:focus {
+            outline: none;
+            border-color: #3b82f6; /* blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4);
+        }
+        .custom-select-wrapper::after {
+            content: 'BC'; /* Unicode for down arrow */
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #6b7280; /* gray-500 */
+            font-size: 0.8rem;
+        }
+
+        /* Custom Popup Notification (reused from cart.ejs for consistency) */
+        .custom-popup {
+            position: fixed;
+            top: 2rem; /* top-8 */
+            right: 2rem; /* right-8 */
+            transform: translateX(120%); /* Start off-screen to the right */
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+        .custom-popup.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0); /* Slide in from right */
+        }
+        .custom-popup.success {
+            background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+        }
+        .custom-popup.error {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+        .custom-popup .icon {
+            width: 24px;
+            height: 24px;
+        }
+        .custom-popup .message {
+            font-size: 1rem;
+        }
+
+        /* Admin Order Filters */
+        .admin-filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            background-color: #e5e7eb; /* gray-200 */
+            color: #4b5563; /* gray-600 */
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+        }
+        .admin-filter-btn:hover {
+            background-color: #d1d5db; /* gray-300 */
+            color: #1f2937; /* gray-800 */
+        }
+        .admin-filter-btn.active {
+            background-color: #dbeafe; /* blue-100 */
+            color: #1d4ed8; /* blue-700 */
+            border-color: #93c5fd; /* blue-300 */
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+        .count-badge {
+            display: inline-block;
+            margin-left: 0.5rem;
+            padding: 0.1rem 0.5rem;
+            border-radius: 8px;
+            font-size: 0.8em;
+            background-color: rgba(0,0,0,0.1);
+        }
+        .admin-filter-btn.active .count-badge {
+            background-color: #1d4ed8; /* blue-700 */
+            color: white;
+        }
+
+        /* Rating Modal */
+        #rating-modal {
+            transition: opacity 0.3s ease-in-out;
+        }
+        #rating-modal-content {
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        .star-label {
+            color: #9ca3af; /* gray-400 */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .star-label:hover,
+        .star-label.hovered,
+        .star-label.selected {
+            color: #f59e0b; /* amber-500 */
+        }
+
+        .form-input-group {
+            position: relative;
+            width: 100%;
+        }
+        .form-input-group .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 65%; /* Adjusted from 50% to lower the icon */
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #a0a0a0;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white bg-opacity-90 shadow-lg py-4 backdrop-blur-md">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <!-- Logo -->
+            <a href="/" class="flex items-center space-x-3 text-3xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
+                <img src="/image/Logo.png" alt="REVOZ Logo" class="h-16 w-16 object-contain">
+                <span>REVOZ</span>
+            </a>
+
+            <!-- Navigation -->
+            <nav class="hidden md:flex space-x-6 ml-8">
+                <a href="/" class="text-gray-600 hover:text-blue-600 transition duration-300">Beranda</a>
+                <a href="/catalog" class="text-gray-600 hover:text-blue-600 transition duration-300">Katalog</a>
+                <a href="/category" class="text-gray-600 hover:text-blue-600 transition duration-300">Kategori</a>
+                <a href="/about" class="text-gray-600 hover:text-blue-600 transition duration-300">Tentang Kami</a>
+                <a href="/contact" class="text-gray-600 hover:text-blue-600 transition duration-300">Kontak</a>
+                <% if (role === 'admin') { %>
+                    <a href="/admin/add-product" class="text-gray-600 hover:text-blue-600 transition duration-300">Tambah Produk</a>
+                <% } %>
+            </nav>
+
+            <!-- Search Bar -->
+            <div class="flex-1 flex justify-center px-8">
+                <form action="/category" method="get" class="w-full max-w-lg">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                            <svg class="h-5 w-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <input class="search-input w-full pl-10 pr-4 py-2 rounded-full text-gray-700 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" name="q" placeholder="Cari produk...">
+                    </div>
+                </form>
+            </div>
+
+            <!-- Utility Icons -->
+            <div class="flex items-center space-x-4">
+                <a href="/cart" class="relative text-gray-600 hover:text-blue-600 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z" />
+                    </svg>
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1"><%= cartItemCount %></span>
+                </a>
+                <% if (isLoggedIn) { %>
+                    <span class="text-gray-600 font-medium">Halo, <a href="/profile" class="text-blue-600 hover:text-blue-700 underline"><%= username %></a></span>
+                    <a href="/logout" class="text-red-600 hover:text-red-700 font-medium transition duration-300">Logout</a>
+                <% } else { %>
+                    <a href="/login" class="text-gray-600 hover:text-blue-600 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </a>
+                <% } %>
+                <button id="mobile-menu-button" class="md:hidden text-gray-600 hover:text-blue-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu md:hidden flex-col items-center py-4 space-y-2 bg-white shadow-md">
+        <a href="/" class="text-gray-600 hover:text-blue-600 transition duration-300">Beranda</a>
+        <a href="/catalog" class="text-gray-600 hover:text-blue-600 transition duration-300">Katalog</a>
+        <a href="/category" class="text-gray-600 hover:text-blue-600 transition duration-300">Kategori</a>
+        <a href="/about" class="text-gray-600 hover:text-blue-600 transition duration-300">Tentang Kami</a>
+    <a href="/contact" class="text-gray-600 hover:text-blue-600 transition duration-300">Kontak</a>
+        <% if (role === 'admin') { %>
+            <a href="/admin/add-product" class="text-gray-600 hover:text-blue-600 transition duration-300">Tambah Produk</a>
+        <% } %>
+    </div>
+
+    <!-- Profile Content -->
+    <main class="flex-grow container mx-auto py-16 px-4">
+        <div class="max-w-5xl mx-auto">
+
+            <!-- Profile Header -->
+            <div class="profile-card p-10 mb-10 fade-in-up">
+                <div class="profile-avatar">
+                    <% if (profilePicture) { %>
+                        <img src="<%= profilePicture %>" alt="Profile Picture" class="w-full h-full object-cover rounded-full">
+                    <% } else { %>
+                        <%= username.charAt(0).toUpperCase() %>
+                    <% } %>
+                </div>
+                <h1 class="text-4xl font-bold text-center text-gray-900 mb-3">Profil Saya</h1>
+                <p class="text-center text-gray-600 mb-6 text-lg">@<%= username %></p>
+                <div class="text-center">
+                    <span class="role-badge <%= role === 'admin' ? 'admin' : '' %>">
+                        <%= role === 'admin' ? 'Administrator' : 'Pelanggan' %>
+                    </span>
+                </div>
+            </div>
+
+            <% if (role === 'admin') { %>
+            <!-- Admin SOP Section -->
+            <div class="profile-card p-8 fade-in-up mb-12">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    SOP Admin
+                </h3>
+                <div class="space-y-4 text-gray-700">
+                    <p>Berikut adalah Standard Operating Procedure (SOP) untuk Administrator:</p>
+                    <ul class="list-disc list-inside ml-4 space-y-2">
+                        <li>Verifikasi pembayaran pelanggan untuk pesanan dengan status "waiting".</li>
+                        <li>Ubah status pesanan menjadi "approved" setelah pembayaran terverifikasi.</li>
+                        <li>Setelah status "approved", kirim notifikasi pengiriman kepada pelanggan melalui WhatsApp.</li>
+                        <li>Ubah status pesanan menjadi "rejected" jika pembayaran tidak valid atau ada masalah lain.</li>
+                        <li>Pantau ulasan produk secara berkala di halaman "Lihat Semua Rating".</li>
+                        <li>Kelola produk (tambah, edit, hapus) melalui halaman "Tambah Produk".</li>
+                    </ul>
+                </div>
+            </div>
+            <% } %>
+
+            <!-- Stats Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <div class="stat-card fade-in-up">
+                    <div class="stat-number"><%= activities.filter(a => a.tipe === 'approved').length %></div>
+                    <div class="stat-label">Pesanan Selesai</div>
+                </div>
+                <div class="stat-card fade-in-up">
+                    <div class="stat-number"><%= user.like ? user.like.length : 0 %></div>
+                    <div class="stat-label">Produk Difavoritkan</div>
+                </div>
+                <div class="stat-card fade-in-up">
+                    <div class="stat-number"><%= ratedProductIds.length %></div>
+                    <div class="stat-label">Ulasan Diberikan</div>
+                </div>
+            </div>
+
+            <!-- Profile Actions -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <div class="profile-card p-8 fade-in-up">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Informasi Akun
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="info-item flex justify-between items-center">
+                            <span class="text-gray-700 font-medium">Username:</span>
+                            <span class="font-semibold text-gray-900"><%= username %></span>
+                        </div>
+                        <% if (nomor) { %>
+                        <div class="info-item flex justify-between items-center">
+                            <span class="text-gray-700 font-medium">WhatsApp:</span>
+                            <div class="flex items-center space-x-3">
+                                <span class="font-semibold text-green-600" id="profile-whatsapp-number"><%= nomor %></span>
+                                <button class="copy-whatsapp-btn text-sm text-gray-500 hover:text-blue-600 transition duration-200" title="Salin Nomor WhatsApp" data-nomor="<%= nomor %>" onclick="inlineCopyFallback(this); return false;">
+                                    Salin
+                                </button>
+                            </div>
+                        </div>
+                        <% } %>
+                        <div class="info-item flex justify-between items-center">
+                            <span class="text-gray-700 font-medium">Role:</span>
+                            <span class="font-semibold text-gray-900"><%= role === 'admin' ? 'Administrator' : 'Pelanggan' %></span>
+                        </div>
+                        <div class="info-item flex justify-between items-center">
+                            <span class="text-gray-700 font-medium">Status:</span>
+                            <span class="font-semibold text-green-600 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Aktif
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card p-8 fade-in-up">
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        Pengaturan Akun
+                    </h3>
+                    <div class="space-y-4">
+                        <button id="change-password-btn" class="w-full action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                            </svg>
+                            Ubah Password
+                        </button>
+                        <form action="/profile/upload-picture" method="POST" enctype="multipart/form-data" class="w-full">
+                            <label for="profilePicture" class="w-full action-btn cursor-pointer block text-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span id="uploadText"><%= profilePicture ? 'Ubah Gambar' : 'Upload Gambar' %></span>
+                            </label>
+                            <input type="file" id="profilePicture" name="profilePicture" accept="image/*" class="hidden" onchange="this.form.submit()">
+                        </form>
+                        <% if (role === 'admin') { %>
+                        <a href="/product-ratings" class="w-full text-center secondary-btn block">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                            Lihat Semua Rating
+                        </a>
+                        <% } %>
+                        <button id="delete-account-btn" class="w-full danger-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Hapus Akun
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="profile-card p-8 fade-in-up mb-12">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Aktivitas Terbaru
+                </h3>
+                <% if (activities && activities.length > 0 && role !== 'admin') { %>
+                    <div class="space-y-6">
+                        <% activities.forEach(function(activity) { %>
+                            <div class="activity-item">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <p class="font-bold text-lg text-gray-800">Pesanan #<%= activity.id %></p>
+                                        <p class="text-sm text-gray-500"><%= new Date(activity.updated_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+                                    </div>
+                                    <span class="status-badge status-<%= activity.tipe %>"><%= activity.tipe %></span>
+                                </div>
+                                <div class="space-y-3 border-t border-b py-3 my-3">
+                                    <% activity.items.forEach(function(item) { %>
+                                        <div class="flex items-center space-x-4">
+                                            <img src="<%= item.image || '/image/katalog.png' %>" alt="<%= item.name %>" class="w-12 h-12 object-cover rounded-md">
+                                            <div class="flex-grow">
+                                                <a href="/product/<%= item.product_id %>" class="font-semibold text-gray-700 hover:text-blue-600"><%= item.name %></a>
+                                                <p class="text-xs text-gray-500">Warna: <%= item.warna %>, Ukuran: <%= item.ukuran %></p>
+                                                <p class="text-sm text-gray-500"><%= item.quantity %> x Rp <%= item.price.toLocaleString('id-ID') %></p>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <% if (activity.tipe === 'approved') { %>
+                                                    <% if (ratedProductIds.includes(item.product_id)) { %>
+                                                        <button class="secondary-btn text-sm py-1 px-3" disabled>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.683-1.539 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.565-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.92 8.729c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+                                                            </svg>
+                                                            Sudah Diulas
+                                                        </button>
+                                                    <% } else { %>
+                                                        <button class="rate-btn action-btn text-sm py-1 px-3" data-product-id="<%= item.product_id %>" data-product-name="<%= item.name %>">
+                                                            Beri Ulasan
+                                                        </button>
+                                                    <% } %>
+                                                <% } %>
+                                                <button class="like-btn p-2 rounded-full transition-colors duration-200 <%= user.like && user.like.includes(item.product_id) ? 'text-red-500' : 'text-gray-400 hover:text-red-500' %>" data-product-id="<%= item.product_id %>" title="Sukai produk ini">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-gray-600">Total Pesanan:</span>
+                                    <span class="font-bold text-xl text-blue-700">Rp <%= activity.total.toLocaleString('id-ID') %></span>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else if (role !== 'admin') { %>
+                    <div class="text-center py-12 text-gray-500">
+                        <div class="relative mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            <div class="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold animate-pulse">
+                                !
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-medium text-gray-700 mb-2">Belum ada aktivitas terbaru</h4>
+                        <p class="text-gray-500 mb-4">Mulai berbelanja untuk melihat aktivitas Anda di sini</p>
+                        <a href="/catalog" class="action-btn px-6 py-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            Mulai Belanja
+                        </a>
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (role === 'admin') { %>
+                <%
+                    const allCount = activities.length;
+                    const waitingCount = activities.filter(a => a.tipe === 'waiting').length;
+                    const approvedCount = activities.filter(a => a.tipe === 'approved').length;
+                    const rejectedCount = activities.filter(a => a.tipe === 'rejected').length;
+                %>
+            <!-- Admin Order Management -->
+            <div class="profile-card p-8 fade-in-up">
+                <h3 class="text-2xl font-semibold text-gray-900 mb-6 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                    </svg>
+                    Manajemen Pesanan
+                </h3>
+
+                <!-- Filter Tabs -->
+                <div class="flex flex-wrap gap-3 mb-6 border-b pb-4">
+                    <button data-filter="all" class="admin-filter-btn active">
+                        Semua Pesanan <span class="count-badge"><%= allCount %></span>
+                    </button>
+                    <button data-filter="waiting" class="admin-filter-btn">
+                        Pesanan Menunggu <span class="count-badge"><%= waitingCount %></span>
+                    </button>
+                    <button data-filter="approved" class="admin-filter-btn">
+                        Pesanan Selesai <span class="count-badge"><%= approvedCount %></span>
+                    </button>
+                    <button data-filter="rejected" class="admin-filter-btn">
+                        Pesanan Dibatalkan <span class="count-badge"><%= rejectedCount %></span>
+                    </button>
+                </div>
+
+                <% if (activities && activities.length > 0) { %>
+                    <div id="admin-order-list" class="space-y-6">
+                        <% activities.forEach(function(activity) { %>
+                            <div class="activity-item" data-status="<%= activity.tipe %>">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                                    <!-- User and Date -->
+                                    <div class="md:col-span-1">
+                                        <p class="font-bold text-lg text-gray-800">Pesanan #<%= activity.id %></p>
+                                        <p class="text-sm text-gray-600 font-semibold">Pelanggan: <span class="font-bold text-blue-700"><%= activity.username %></span></p>
+                                        <div class="text-sm text-gray-600 font-semibold flex items-center">
+                                            <span>WA: <span class="font-bold text-green-600"><%= activity.nomor || 'N/A' %></span></span>
+                                            <% if (activity.nomor) { %>
+                                            <a href="https://wa.me/<%= activity.nomor %>?text=Halo%20<%= encodeURIComponent(activity.username) %>!%20Pesanan%20Anda%20%23<%= activity.id %>%20telah%20dikirim.%20Terima%20kasih!" target="_blank" class="chat-whatsapp-btn ml-2 text-green-500 hover:text-green-700" title="Chat via WhatsApp">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12.04 2C7.06 2 3.04 6.02 3.04 11c0 1.79.52 3.45 1.42 4.85L3 21l5.15-1.42c1.4.9 3.06 1.42 4.85 1.42 4.98 0 9-4.02 9-9s-4.02-9-9-9zm0 16.5c-1.5 0-2.9-.4-4.05-1.1l-.29-.17-2.9 1.1.79-2.88-.19-.29c-.7-.99-1.1-2.14-1.1-3.36 0-3.68 3-6.68 6.68-6.68 1.78 0 3.45.7 4.7 1.95s1.95 2.92 1.95 4.7c0 3.68-3 6.68-6.68 6.68zm3.6-4.8c-.2-.1-.8-.4-1.1-.5s-.5-.1-.8.1-.6.5-.8.6-.4.1-.7-.1c-.3-.1-.7-.3-1.3-.8s-1-.9-1.4-1.5c-.4-.6-.1-.9.1-1.1s.5-.4.6-.5.2-.3.3-.5c.1-.2 0-.4-.1-.5-.1-.1-.8-2-.8-2.7s-.4-1.4-.8-1.4c-.4 0-.7-.1-.9-.1-.2 0-.5.1-.7.1s-.5.1-.8.4c-.3.3-1.1 1.1-1.1 2.7s1.1 3.1 1.2 3.3c.1.2 2.1 3.2 5.1 4.5s3.7.9 4.4.8c.7-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.1-1.4-.1-.2-.3-.3-.6-.4z"/>
+                                                </svg>
+                                            </a>
+                                            <button class="copy-whatsapp-btn ml-2 text-gray-500 hover:text-blue-600 transition duration-300" title="Salin Nomor WhatsApp" data-nomor="<%= activity.nomor %>" onclick="inlineCopyFallback(this); return false;">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1.5M9 3h2.25a1.25 1.25 0 011.25 1.25V15h-3.5A1.25 1.25 0 018 13.75V4.25A1.25 1.25 0 019.25 3z" />
+                                                </svg>
+                                            </button>
+                                            <% } %>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1"><%= new Date(activity.updated_at).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' }) %></p>
+                                    </div>
+                                    <!-- Items and Total -->
+                                    <div class="md:col-span-2">
+                                        <div class="space-y-2 border-b pb-2 mb-2">
+                                            <% activity.items.forEach(function(item) { %>
+                                                <div class="flex items-center justify-between text-sm">
+                                                    <div class="flex items-center">
+                                                        <img src="<%= item.image || '/image/katalog.png' %>" alt="<%= item.name %>" class="w-8 h-8 object-cover rounded-md mr-2">
+                                                        <div>
+                                                            <span><%= item.name %> (x<%= item.quantity %>)</span>
+                                                            <p class="text-xs text-gray-500">Warna: <%= item.warna %>, Ukuran: <%= item.ukuran %></p>
+                                                        </div>
+                                                    </div>
+                                                    <span>Rp <%= (item.price * item.quantity).toLocaleString('id-ID') %></span>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-gray-600">Total:</span>
+                                            <span class="font-bold text-lg text-blue-700">Rp <%= activity.total.toLocaleString('id-ID') %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Status Changer -->
+                                <div class="mt-4 pt-4 border-t flex items-center justify-end space-x-4">
+                                    <label for="status-<%= activity.id %>" class="font-semibold text-gray-700">Ubah Status:</label>
+                                    <div class="custom-select-wrapper">
+                                        <select data-cart-id="<%= activity.id %>" id="status-<%= activity.id %>" class="status-changer custom-select">
+                                            <option value="waiting" <%= activity.tipe === 'waiting' ? 'selected' : '' %>>Waiting</option>
+                                            <option value="approved" <%= activity.tipe === 'approved' ? 'selected' : '' %>>Approved</option>
+                                            <option value="rejected" <%= activity.tipe === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <p class="text-center text-gray-500 py-8">Tidak ada pesanan yang perlu dikelola saat ini.</p>
+                <% } %>
+            </div>
+            <% } %>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-auto">
+        <div class="container mx-auto text-center px-4">
+            <p>&copy; 2025 REVOZ. Semua Hak Dilindungi.</p>
+            <div class="flex justify-center space-x-6 mt-4">
+                <a href="#" class="hover:text-blue-400 transition duration-300">Kebijakan Privasi</a>
+                <a href="#" class="hover:text-blue-400 transition duration-300">Syarat & Ketentuan</a>
+                <a href="#" class="hover:text-blue-400 transition duration-300">FAQ</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Change Password Modal -->
+    <div id="change-password-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
+        <div id="change-password-modal-content" class="bg-white rounded-2xl shadow-2xl p-8 m-4 max-w-md w-full transform scale-95 opacity-0 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Ubah Password</h2>
+                <button id="close-password-modal" class="text-gray-400 hover:text-gray-600 text-3xl">&times;</button>
+            </div>
+            <form id="change-password-form">
+                <div class="space-y-4">
+                    <div class="form-input-group">
+                        <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1">Password Saat Ini</label>
+                        <input type="password" id="current-password" name="currentPassword" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <span class="toggle-password" data-target="current-password">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+                        </span>
+                    </div>
+                    <div class="form-input-group">
+                        <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">Password Baru</label>
+                        <input type="password" id="new-password" name="newPassword" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <span class="toggle-password" data-target="new-password">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+                        </span>
+                    </div>
+                    <div class="form-input-group">
+                        <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Konfirmasi Password Baru</label>
+                        <input type="password" id="confirm-password" name="confirmPassword" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                        <span class="toggle-password" data-target="confirm-password">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>
+                        </span>
+                    </div>
+                    <p id="password-error" class="text-red-500 text-sm mt-1 hidden"></p>
+                </div>
+                <div class="flex justify-end mt-6">
+                    <button type="submit" class="action-btn py-2 px-6">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div id="delete-account-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden opacity-0 transition-opacity duration-300">
+        <div id="delete-account-modal-content" class="bg-white rounded-2xl shadow-2xl p-8 m-4 max-w-md w-full transform scale-95 opacity-0 transition-all duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Konfirmasi Penghapusan Akun</h2>
+                <button id="close-delete-account-modal" class="text-gray-400 hover:text-gray-600 text-3xl">&times;</button>
+            </div>
+            <div class="text-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-red-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <p class="text-gray-700 mb-6">Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.</p>
+            <div class="flex justify-center space-x-4">
+                <button id="cancel-delete-account-btn" class="secondary-btn py-2 px-6">Tidak</button>
+                <button id="confirm-delete-account-btn" class="danger-btn py-2 px-6">Ya, Hapus Akun</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition duration-300 hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+    </button>
+
+    <!-- Custom Popup Notification -->
+    <div id="custom-popup" class="custom-popup">
+        <div class="icon"></div>
+        <div class="message"></div>
+    </div>
+
+    <% if (!nomor) { %>
+    <!-- WhatsApp Number Modal -->
+    <div id="whatsapp-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 m-4 max-w-md w-full transform transition-all duration-300 scale-95 opacity-0" id="whatsapp-modal-content">
+            <h2 class="text-2xl font-bold text-gray-800 text-center mb-4">Lengkapi Profil Anda</h2>
+            <p class="text-center text-gray-600 mb-6">Silakan masukkan nomor WhatsApp Anda untuk melanjutkan.</p>
+            <div class="space-y-4">
+                <div>
+                    <label for="whatsapp-input" class="block text-sm font-medium text-gray-700 mb-1">Nomor WhatsApp</label>
+                    <input type="text" id="whatsapp-input" placeholder="Contoh: 081234567890" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    <p id="whatsapp-error" class="text-red-500 text-sm mt-1 hidden"></p>
+                </div>
+                <button id="save-whatsapp-btn" class="w-full action-btn py-3">Simpan</button>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <script>
+        try {
+            console.info('Profile page script starting');
+        // --- WhatsApp Modal Logic (client-side) --- 
+        const hasWhatsAppNumber = JSON.parse('<%- JSON.stringify(!!nomor) %>');
+        if (!hasWhatsAppNumber) {
+            const modal = document.getElementById('whatsapp-modal');
+            const modalContent = document.getElementById('whatsapp-modal-content');
+            const saveBtn = document.getElementById('save-whatsapp-btn');
+            const input = document.getElementById('whatsapp-input');
+            const errorP = document.getElementById('whatsapp-error');
+
+            setTimeout(() => {
+                modal.classList.remove('hidden');
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 100);
+
+            saveBtn.addEventListener('click', async () => {
+                const nomor = input.value.trim();
+                errorP.classList.add('hidden');
+                if (!nomor) {
+                    errorP.textContent = 'Nomor tidak boleh kosong.';
+                    errorP.classList.remove('hidden');
+                    return;
+                }
+                const response = await postJson('/api/user/update-whatsapp', { nomor });
+                if (response.ok) {
+                    showCustomPopup('Nomor berhasil disimpan!', true);
+                    modalContent.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        location.reload();
+                    }, 300);
+                } else {
+                    errorP.textContent = response.message || 'Terjadi kesalahan.';
+                    errorP.classList.remove('hidden');
+                }
+            });
+        }
+
+        document.getElementById('mobile-menu-button').onclick = function() {
+            document.getElementById('mobile-menu').classList.toggle('active');
+        };
+
+        const backToTopButton = document.getElementById('back-to-top');
+        window.onscroll = function() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                backToTopButton.classList.remove('hidden');
+            } else {
+                backToTopButton.classList.add('hidden');
+            }
+        };
+        backToTopButton.onclick = function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('in-view');
+                    }, index * 150);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.fade-in-up').forEach((element) => {
+            observer.observe(element);
+        });
+
+        async function postJson(url, body) {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+            return res.json();
+        }
+
+    function showCustomPopup(message, success = true) {
+            const popup = document.getElementById('custom-popup');
+            if (!popup) return;
+            const iconContainer = popup.querySelector('.icon');
+            const messageContainer = popup.querySelector('.message');
+            
+            messageContainer.textContent = message;
+            popup.classList.remove('success', 'error');
+            
+            if (success) {
+                popup.classList.add('success');
+                iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            } else {
+                popup.classList.add('error');
+                iconContainer.innerHTML = `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            }
+
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 3000);
+        }
+
+        // Global fallback used by inline onclick handlers when main script didn't attach
+        function inlineCopyFallback(el) {
+            function doShow(message, success) {
+                var popup = document.getElementById('custom-popup');
+                if (!popup) { alert(message); return; }
+                var icon = popup.querySelector('.icon');
+                var msgc = popup.querySelector('.message');
+                msgc.textContent = message;
+                popup.classList.remove('success', 'error');
+                popup.classList.add(success ? 'success' : 'error');
+                if (success) {
+                    icon.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+                } else {
+                    icon.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+                }
+                popup.classList.add('show');
+                setTimeout(function () { popup.classList.remove('show'); }, 3000);
+            }
+
+            var nomor = el && el.dataset && el.dataset.nomor ? el.dataset.nomor : (document.getElementById('profile-whatsapp-number') ? document.getElementById('profile-whatsapp-number').textContent.trim() : null);
+            if (!nomor) { doShow('Nomor WhatsApp tidak tersedia', false); return false; }
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(nomor).then(function () { doShow('Nomor WhatsApp berhasil disalin!', true); }).catch(function () {
+                    try {
+                        var t = document.createElement('textarea'); t.value = nomor; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); doShow('Nomor WhatsApp berhasil disalin! (Fallback)', true);
+                    } catch (e) {
+                        doShow('Gagal menyalin nomor WhatsApp.', false);
+                    }
+                });
+            } else {
+                try {
+                    var t = document.createElement('textarea'); t.value = nomor; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); doShow('Nomor WhatsApp berhasil disalin! (Fallback)', true);
+                } catch (e) {
+                    doShow('Gagal menyalin nomor WhatsApp.', false);
+                }
+            }
+            return false;
+        }
+
+        document.querySelectorAll('.status-changer').forEach(selector => {
+            selector.addEventListener('change', async (e) => {
+                const cartId = e.target.dataset.cartId;
+                const newStatus = e.target.value;
+                const response = await postJson('/api/admin/orders/update-status', { cart_id: cartId, new_status: newStatus });
+                if (response.ok) {
+                    showCustomPopup(`Status pesanan #${cartId} berhasil diubah ke ${newStatus}`, true);
+                } else {
+                    showCustomPopup(`Gagal mengubah status: ${response.message}`, false);
+                }
+            });
+        });
+
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                const buttonEl = e.currentTarget;
+                const productId = buttonEl.dataset.productId;
+                if (!productId) return;
+                const isCurrentlyLiked = buttonEl.classList.contains('text-red-500');
+                const newLikedState = !isCurrentlyLiked;
+                buttonEl.classList.toggle('text-red-500', newLikedState);
+                buttonEl.classList.toggle('text-gray-400', !newLikedState);
+                const response = await postJson('/api/product/toggle-like', { productId });
+                if (response.ok) {
+                    showCustomPopup(response.message, true);
+                    const favoriteStat = document.querySelector('.stat-card:nth-child(2) .stat-number');
+                    if (favoriteStat) favoriteStat.textContent = response.likeCount;
+                } else {
+                    showCustomPopup(`Gagal: ${response.message || 'Terjadi kesalahan'}`, false);
+                    buttonEl.classList.toggle('text-red-500', isCurrentlyLiked);
+                    buttonEl.classList.toggle('text-gray-400', !isCurrentlyLiked);
+                }
+            });
+        });
+
+        document.querySelectorAll('.toggle-password').forEach(toggle => {
+            toggle.addEventListener('click', function () {
+                const targetId = this.dataset.target;
+                const passwordInput = document.getElementById(targetId);
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    this.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3.707 2.293a1 1 0 00-1.414 1.414L5.586 8H4a1 1 0 000 2h1.586l-2.293 2.293a1 1 0 001.414 1.414L8 11.414V13a1 1 0 102 0v-1.586l2.293 2.293a1 1 0 001.414-1.414L11.414 10H13a1 1 0 100-2h-1.586l2.293-2.293a1 1 0 00-1.414-1.414L10 8.586V7a1 1 0 10-2 0v1.586L3.707 2.293zM10 12a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" /></svg>`; // Eye-slash icon
+                } else {
+                    passwordInput.type = 'password';
+                    this.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10 12a2 2 0 100-4 2 2 0 000 4z" /><path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" /></svg>`; // Eye icon
+                }
+            });
+        });
+
+        const filterButtons = document.querySelectorAll('.admin-filter-btn');
+        const orderList = document.getElementById('admin-order-list');
+        if (filterButtons.length > 0 && orderList) {
+            const orderItems = orderList.querySelectorAll('.activity-item');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    const filterValue = button.dataset.filter;
+                    orderItems.forEach(item => {
+                        item.style.display = (filterValue === 'all' || item.dataset.status === filterValue) ? 'block' : 'none';
+                    });
+                });
+            });
+        }
+
+        // --- Rating Modal Logic ---
+        const ratingModal = document.getElementById('rating-modal');
+        const ratingModalContent = document.getElementById('rating-modal-content');
+        const closeRatingModalBtn = document.getElementById('close-rating-modal');
+        const ratingForm = document.getElementById('rating-form');
+        const productIdInput = document.getElementById('rating-product-id');
+        const productNameSpan = document.getElementById('rating-product-name');
+        const stars = document.querySelectorAll('#star-rating-input .star-label');
+        const ratingValueInput = document.getElementById('rating-value');
+
+        // --- Change Password Modal Logic ---
+        const changePasswordModal = document.getElementById('change-password-modal');
+        const changePasswordModalContent = document.getElementById('change-password-modal-content');
+        const openPasswordModalBtn = document.getElementById('change-password-btn');
+        const closePasswordModalBtn = document.getElementById('close-password-modal');
+        const passwordForm = document.getElementById('change-password-form');
+        const passwordError = document.getElementById('password-error');
+
+        if (openPasswordModalBtn) {
+            openPasswordModalBtn.addEventListener('click', () => {
+                changePasswordModal.classList.remove('hidden');
+                setTimeout(() => {
+                    changePasswordModal.classList.remove('opacity-0');
+                    changePasswordModalContent.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+            });
+        }
+
+        function closePasswordModal() {
+            changePasswordModalContent.classList.add('scale-95', 'opacity-0');
+            changePasswordModal.classList.add('opacity-0');
+            setTimeout(() => {
+                changePasswordModal.classList.add('hidden');
+                passwordForm.reset();
+                passwordError.classList.add('hidden');
+            }, 300);
+        }
+
+        closePasswordModalBtn.addEventListener('click', closePasswordModal);
+        changePasswordModal.addEventListener('click', (e) => {
+            if (e.target === changePasswordModal) {
+                closePasswordModal();
+            }
+        });
+
+        passwordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            passwordError.classList.add('hidden');
+
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (newPassword !== confirmPassword) {
+                passwordError.textContent = 'Password baru tidak cocok.';
+                passwordError.classList.remove('hidden');
+                return;
+            }
+            
+            if (newPassword.length < 6) { // Example validation
+                passwordError.textContent = 'Password baru minimal harus 6 karakter.';
+                passwordError.classList.remove('hidden');
+                return;
+            }
+
+            const formData = new FormData(passwordForm);
+            const data = Object.fromEntries(formData.entries());
+
+            const response = await postJson('/api/user/change-password', data);
+
+            if (response.ok) {
+                showCustomPopup('Password berhasil diubah!', true);
+                closePasswordModal();
+            } else {
+                passwordError.textContent = response.message || 'Gagal mengubah password.';
+                passwordError.classList.remove('hidden');
+            }
+        });
+
+        // --- Delete Account Logic ---
+        const deleteAccountBtn = document.getElementById('delete-account-btn');
+        const deleteAccountModal = document.getElementById('delete-account-modal');
+        const deleteAccountModalContent = document.getElementById('delete-account-modal-content');
+        const closeDeleteAccountModalBtn = document.getElementById('close-delete-account-modal');
+        const cancelDeleteAccountBtn = document.getElementById('cancel-delete-account-btn');
+        const confirmDeleteAccountBtn = document.getElementById('confirm-delete-account-btn');
+
+        function openDeleteAccountModal() {
+            deleteAccountModal.classList.remove('hidden');
+            setTimeout(() => {
+                deleteAccountModal.classList.remove('opacity-0');
+                deleteAccountModalContent.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function closeDeleteAccountModal() {
+            deleteAccountModalContent.classList.add('scale-95', 'opacity-0');
+            deleteAccountModal.classList.add('opacity-0');
+            setTimeout(() => {
+                deleteAccountModal.classList.add('hidden');
+            }, 300);
+        }
+
+        if (deleteAccountBtn) {
+            deleteAccountBtn.addEventListener('click', openDeleteAccountModal);
+        }
+
+        closeDeleteAccountModalBtn.addEventListener('click', closeDeleteAccountModal);
+        cancelDeleteAccountBtn.addEventListener('click', closeDeleteAccountModal);
+        deleteAccountModal.addEventListener('click', (e) => {
+            if (e.target === deleteAccountModal) {
+                closeDeleteAccountModal();
+            }
+        });
+
+        confirmDeleteAccountBtn.addEventListener('click', async () => {
+            const response = await fetch('/api/user/delete-account', {
+                method: 'POST', // Assuming POST for simplicity, could be DELETE
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const result = await response.json();
+
+            if (result.ok) {
+                showCustomPopup('Akun Anda berhasil dihapus.', true);
+                closeDeleteAccountModal();
+                setTimeout(() => {
+                    window.location.href = '/'; // Redirect to home or login page
+                }, 1500);
+            } else {
+                showCustomPopup(result.message || 'Gagal menghapus akun.', false);
+            }
+        });
+
+        function openRatingModal(productId, productName) {
+            productIdInput.value = productId;
+            productNameSpan.textContent = productName;
+            ratingModal.classList.remove('hidden');
+            setTimeout(() => {
+                ratingModal.classList.remove('opacity-0');
+                ratingModalContent.classList.remove('scale-95', 'opacity-0');
+                ratingModalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeRatingModal() {
+            ratingModalContent.classList.remove('scale-100', 'opacity-100');
+            ratingModalContent.classList.add('scale-95', 'opacity-0');
+            ratingModal.classList.add('opacity-0');
+            setTimeout(() => {
+                ratingModal.classList.add('hidden');
+                resetRatingForm();
+            }, 300);
+        }
+        
+        function resetRatingForm() {
+            ratingForm.reset();
+            ratingValueInput.value = 0;
+            stars.forEach(s => s.classList.remove('selected', 'hovered'));
+        }
+
+        document.querySelectorAll('.rate-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const productId = e.currentTarget.dataset.productId;
+                const productName = e.currentTarget.dataset.productName;
+                openRatingModal(productId, productName);
+            });
+        });
+
+        closeRatingModalBtn.addEventListener('click', closeRatingModal);
+        ratingModal.addEventListener('click', (e) => {
+            if (e.target === ratingModal) {
+                closeRatingModal();
+            }
+        });
+
+        // Star rating interaction
+        stars.forEach(star => {
+            star.addEventListener('mouseover', () => {
+                const value = parseInt(star.dataset.value);
+                stars.forEach((s, i) => {
+                    s.classList.toggle('hovered', i < value);
+                });
+            });
+            star.addEventListener('mouseout', () => {
+                stars.forEach(s => s.classList.remove('hovered'));
+            });
+            star.addEventListener('click', () => {
+                const value = parseInt(star.dataset.value);
+                ratingValueInput.value = value;
+                stars.forEach((s, i) => {
+                    s.classList.toggle('selected', i < value);
+                });
+            });
+        });
+
+        ratingForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const productId = productIdInput.value;
+            const rating = ratingValueInput.value;
+            const review = document.getElementById('rating-review').value;
+
+            if (rating < 1) {
+                showCustomPopup('Silakan pilih rating bintang.', false);
+                return;
+            }
+
+            const response = await postJson('/api/products/rate', { productId, rating, review });
+
+            if (response.ok) {
+                showCustomPopup(response.message || 'Ulasan berhasil dikirim!', true);
+                closeRatingModal();
+                // Disable the button for the product that was just rated
+                const ratedButton = document.querySelector(`.rate-btn[data-product-id="${productId}"]`);
+                if (ratedButton) {
+                    ratedButton.textContent = 'Sudah Diulas';
+                    ratedButton.disabled = true;
+                    ratedButton.classList.remove('action-btn');
+                    ratedButton.classList.add('secondary-btn');
+                }
+                // Update stats
+                const reviewsGivenStat = document.querySelector('.stat-card:nth-child(3) .stat-number');
+                if(reviewsGivenStat) {
+                    reviewsGivenStat.textContent = parseInt(reviewsGivenStat.textContent) + 1;
+                }
+            } else {
+                showCustomPopup(response.message || 'Gagal mengirim ulasan.', false);
+            }
+        });
+
+    // --- Copy WhatsApp Number Logic ---
+        (function initCopyWhatsApp() {
+            console.log('initCopyWhatsApp running, document.readyState=', document.readyState);
+            if (document.readyState === 'loading') {
+                return document.addEventListener('DOMContentLoaded', initCopyWhatsApp);
+            }
+
+            const copyButtons = document.querySelectorAll('.copy-whatsapp-btn');
+            if (!copyButtons || copyButtons.length === 0) {
+                console.log('No copy-whatsapp-btn elements found');
+                return;
+            }
+
+            copyButtons.forEach(button => {
+                // ensure we don't attach multiple times
+                if (button._copyHandlerAttached) return;
+                button._copyHandlerAttached = true;
+
+                button.addEventListener('click', async (e) => {
+                    const btn = e.currentTarget;
+                    const nomor = (btn.dataset && btn.dataset.nomor) ? btn.dataset.nomor : (document.getElementById('profile-whatsapp-number') ? document.getElementById('profile-whatsapp-number').textContent.trim() : null);
+                    console.log('Copy button clicked. Nomor:', nomor);
+
+                    if (!nomor) {
+                        showCustomPopup('Nomor WhatsApp tidak tersedia.', false);
+                        console.warn('Nomor is empty or undefined, cannot copy.');
+                        return;
+                    }
+
+                    // Try Clipboard API
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(nomor);
+                            console.log('Copied using Clipboard API.');
+                            showCustomPopup('Nomor WhatsApp berhasil disalin!', true);
+                            // UI feedback
+                            const originalText = btn.textContent;
+                            btn.textContent = 'Tersalin!';
+                            btn.classList.add('text-green-600');
+                            setTimeout(() => {
+                                btn.textContent = originalText;
+                                btn.classList.remove('text-green-600');
+                            }, 2500);
+                            return;
+                        }
+                    } catch (err) {
+                        console.warn('Clipboard API failed:', err);
+                        // fall through to fallback
+                    }
+
+                    // Fallback method
+                    try {
+                        const textarea = document.createElement('textarea');
+                        textarea.value = nomor;
+                        // Ensure textarea is not visible and not affected by page layout
+                        textarea.style.position = 'fixed';
+                        textarea.style.left = '-9999px';
+                        textarea.style.top = '0';
+                        document.body.appendChild(textarea);
+                        textarea.focus();
+                        textarea.select();
+                        const successful = document.execCommand('copy');
+                        document.body.removeChild(textarea);
+                        if (successful) {
+                            console.log('Copied using execCommand fallback.');
+                            showCustomPopup('Nomor WhatsApp berhasil disalin! (Fallback)', true);
+                            const originalText = btn.textContent;
+                            btn.textContent = 'Tersalin!';
+                            btn.classList.add('text-green-600');
+                            setTimeout(() => {
+                                btn.textContent = originalText;
+                                btn.classList.remove('text-green-600');
+                            }, 2500);
+                        } else {
+                            console.error('Fallback copy command returned false.');
+                            showCustomPopup('Gagal menyalin nomor WhatsApp.', false);
+                        }
+                    } catch (fallbackErr) {
+                        console.error('Fallback copy failed:', fallbackErr);
+                        showCustomPopup('Gagal menyalin nomor WhatsApp.', false);
+                    }
+                });
+            });
+        })();
+
+        } catch (err) {
+            // Ensure any error is visible in console so we can debug why handlers may not attach
+            console.error('Profile page script error:', err);
+        }
+    </script>
+
+</body>
+</html>
