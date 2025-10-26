@@ -92,17 +92,17 @@ app.put('/api/products/:id', requireAuth, requireAdmin, upload.fields([{ name: '
     const mainImage = req.files && req.files.image && req.files.image.length > 0 ? '/image/' + req.files.image[0].filename : null;
     const newJenisImages = req.files && req.files.jenis_images && req.files.jenis_images.length > 0 ? req.files.jenis_images.map(file => '/image/' + file.filename).join(',') : null;
 
-    if (!productId) return res.status(400).send('Missing product ID');
-    if (!name || !description || !price) return res.status(400).send('Missing required fields');
+    if (!productId) return res.status(400).json({ ok: false, message: 'Missing product ID' });
+    if (!name || !description || !price) return res.status(400).json({ ok: false, message: 'Missing required fields' });
 
     const prodPrice = parseInt(price, 10);
-    if (isNaN(prodPrice)) return res.status(400).send('Invalid price');
+    if (isNaN(prodPrice)) return res.status(400).json({ ok: false, message: 'Invalid price' });
 
     // Fetch existing product data to merge jenis images
     db.query('SELECT image, jenis FROM products WHERE id = ?', [productId], (err, results) => {
         if (err) {
             console.error('Error fetching existing product for update:', err);
-            return res.status(500).send('Error updating product');
+            return res.status(500).json({ ok: false, message: 'Error fetching existing product' });
         }
         const existingProduct = results.length > 0 ? results[0] : {};
         let currentJenisImagesArray = existingProduct.jenis ? existingProduct.jenis.split(',') : [];
@@ -130,16 +130,38 @@ app.put('/api/products/:id', requireAuth, requireAdmin, upload.fields([{ name: '
         let updateQuery = 'UPDATE products SET name = ?, description = ?, price = ?, spesifikasi = ?, warna = ?, ukuran = ?, image = ?, jenis = ? WHERE id = ?';
         let updateValues = [name, description, prodPrice, spesifikasi || null, warna || null, ukuran || null, finalMainImage, finalJenisImages, productId];
 
-        db.query(updateQuery, updateValues, function(err, result) {
-            if (err) {
-                console.error('Edit product error:', err);
-                return res.status(500).send('Error updating product');
-            }
-            if (result.affectedRows === 0) {
-                return res.status(404).send('Product not found');
-            }
-            res.json({ ok: true, message: 'Product updated successfully' });
-        });
+        function runUpdate(tryAlterOnce = true) {
+            db.query(updateQuery, updateValues, function(err, result) {
+                if (err) {
+                    console.error('Edit product error:', err);
+                    // If failure due to missing columns, try to add common missing columns and retry once
+                    if (tryAlterOnce && err.code === 'ER_BAD_FIELD_ERROR') {
+                        console.warn('Attempting to add missing product columns and retry update...');
+                        // Attempt to add columns that newer templates expect. Ignore errors.
+                        Promise.all([
+                            db.promise().query("ALTER TABLE products ADD COLUMN IF NOT EXISTS spesifikasi TEXT"),
+                            db.promise().query("ALTER TABLE products ADD COLUMN IF NOT EXISTS jenis TEXT"),
+                            db.promise().query("ALTER TABLE products ADD COLUMN IF NOT EXISTS warna VARCHAR(255)"),
+                            db.promise().query("ALTER TABLE products ADD COLUMN IF NOT EXISTS ukuran VARCHAR(255)")
+                        ]).then(() => {
+                            // Retry update once
+                            runUpdate(false);
+                        }).catch((alterErr) => {
+                            console.warn('Failed adding product columns (non-fatal):', alterErr && alterErr.message ? alterErr.message : alterErr);
+                            return res.status(500).json({ ok: false, message: 'Error updating product (schema issue)' });
+                        });
+                        return;
+                    }
+                    return res.status(500).json({ ok: false, message: 'Error updating product' });
+                }
+                if (result.affectedRows === 0) {
+                    return res.status(404).json({ ok: false, message: 'Product not found' });
+                }
+                res.json({ ok: true, message: 'Product updated successfully' });
+            });
+        }
+
+        runUpdate(true);
     });
 });
 
@@ -1562,6 +1584,21 @@ app.post('/register', async (req, res) => {
     }
 });
 
+// POST /api/user/check-username - check whether a username is already registered
+app.post('/api/user/check-username', (req, res) => {
+    const { username } = req.body;
+    if (!username) return res.status(400).json({ ok: false, message: 'Username diperlukan.' });
+
+    db.query('SELECT id FROM users WHERE username = ?', [username], (err, results) => {
+        if (err) {
+            console.error('Error checking username existence:', err);
+            return res.status(500).json({ ok: false, message: 'Terjadi kesalahan server.' });
+        }
+        const exists = results && results.length > 0;
+        res.json({ ok: true, exists });
+    });
+});
+
 // Login route
 app.post('/login', (req, res) => {
     const { username, password } = req.body;
@@ -1772,6 +1809,25 @@ app.post('/api/cart/remove', requireAuth, (req, res) => {
     });
 });
 
+// POST /api/cart/update-quantity { item_id, quantity }
+app.post('/api/cart/update-quantity', requireAuth, (req, res) => {
+    const { item_id, quantity } = req.body;
+    if (!item_id) return res.status(400).json({ ok: false, message: 'Missing item_id' });
+    const qty = parseInt(quantity, 10);
+    if (isNaN(qty) || qty < 1) return res.status(400).json({ ok: false, message: 'Quantity must be a positive integer' });
+
+    db.query('UPDATE cart_items SET quantity = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [qty, item_id], function(err, result) {
+        if (err) {
+            console.error('Error updating cart item quantity:', err);
+            return res.status(500).json({ ok: false, message: 'Database error' });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ ok: false, message: 'Cart item not found' });
+        }
+        return res.json({ ok: true });
+    });
+});
+
 // POST /api/cart/clear -> clear current cart
 app.post('/api/cart/clear', requireAuth, async (req, res) => {
     try {
@@ -1790,7 +1846,7 @@ app.post('/api/cart/clear', requireAuth, async (req, res) => {
 
 // POST /api/cart/checkout -> process checkout
 app.post('/api/cart/checkout', requireAuth, async (req, res) => {
-    const { paymentMethod } = req.body;
+    const { paymentMethod, shippingAddress } = req.body;
     if (!paymentMethod) {
         return res.status(400).json({ ok: false, message: 'Payment method is required' });
     }
@@ -1804,7 +1860,7 @@ app.post('/api/cart/checkout', requireAuth, async (req, res) => {
         if (!cart) return res.status(404).json({ ok: false, message: 'Cart not found' });
 
         // Check if cart has items
-        db.query('SELECT id FROM cart_items WHERE cart_id = ?', [cart.id], (err, items) => {
+        db.query('SELECT id FROM cart_items WHERE cart_id = ?', [cart.id], async (err, items) => {
             if (err) {
                 console.error('Error checking cart items:', err);
                 return res.status(500).json({ ok: false, message: 'Server error' });
@@ -1815,8 +1871,20 @@ app.post('/api/cart/checkout', requireAuth, async (req, res) => {
 
             console.log(`Processing checkout for cart ${cart.id} with payment method: ${paymentMethod}`);
 
-            // Update cart status to 'completed' and tipe to 'waiting'
-            db.query("UPDATE carts SET status = 'completed', tipe = 'waiting', payment_method = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [paymentMethod, cart.id], function(err) {
+            // Try to add optional columns if they don't exist (harmless on modern MySQL)
+            try {
+                await db.promise().query("ALTER TABLE carts ADD COLUMN IF NOT EXISTS payment_method VARCHAR(255)");
+                await db.promise().query("ALTER TABLE carts ADD COLUMN IF NOT EXISTS tipe VARCHAR(50)");
+                await db.promise().query("ALTER TABLE carts ADD COLUMN IF NOT EXISTS shipping_address TEXT");
+            } catch (alterErr) {
+                // Not critical - log and continue. Some older MySQL versions may not support IF NOT EXISTS.
+                console.warn('Could not ensure cart columns (safe to ignore on some setups):', alterErr && alterErr.message ? alterErr.message : alterErr);
+            }
+
+            const shippingJson = shippingAddress ? JSON.stringify(shippingAddress) : null;
+
+            // Update cart status to 'completed' and tipe to 'waiting', persist payment and shipping info
+            db.query("UPDATE carts SET status = 'completed', tipe = 'waiting', payment_method = ?, shipping_address = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?", [paymentMethod, shippingJson, cart.id], function(err) {
                 if (err) {
                     console.error('Checkout error:', err);
                     return res.status(500).json({ ok: false, message: 'Checkout error' });
@@ -1831,7 +1899,6 @@ app.post('/api/cart/checkout', requireAuth, async (req, res) => {
     }
 });
 
-const { default: openBrowser } = require('open');
 
 // Optional: Nodemailer for sending admin notifications on contact form
 let mailerTransport = null;
@@ -1864,8 +1931,4 @@ try {
 
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
-    // Open browser automatically in development
-    // if (process.env.NODE_ENV !== 'production') {
-    //     openBrowser(`http://localhost:${port}`);
-    // }
 });

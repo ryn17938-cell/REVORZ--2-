@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "npm --prefix \"REVORZ\" run dev",
-    "start": "npm --prefix \"REVORZ\" start"
+    "dev": "nodemon REVORZ/REVORZ/server.js",
+    "start": "node REVORZ/REVORZ/server.js"
   }
 }

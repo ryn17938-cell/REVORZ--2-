@@ -36,7 +36,7 @@
         }
 
         /* Loading Overlay */
-        .loading-overlay {
+            .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -50,10 +50,12 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
+                pointer-events: none; /* don't block clicks when hidden */
         }
         .loading-overlay.show {
             opacity: 1;
             visibility: visible;
+                pointer-events: auto; /* allow interaction block while visible */
         }
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
@@ -116,7 +118,7 @@
         <div class="container mx-auto flex justify-between items-center px-4">
             <!-- Logo -->
             <a href="/" class="flex items-center space-x-3 text-3xl font-bold text-blue-600 hover:text-blue-700 transition duration-300">
-                <img src="/image/Logo.png" alt="REVOZ Logo" class="h-16 w-16 object-contain">
+                <img src="/image/Logo.png" alt="REVOZ Logo" class="logo h-16 w-16 object-contain">
                 <span>REVOZ</span>
             </a>
 
@@ -194,7 +196,7 @@
                 <h1 class="text-4xl font-bold text-gray-900 mb-2">Edit Produk</h1>
                 <p class="text-gray-600">Ubah detail produk yang sudah ada</p>
             </div>
-            <form action="/api/products/<%= product.id %>" method="dialog" enctype="multipart/form-data" class="space-y-6">
+            <form action="/api/products/<%= product.id %>" method="post" enctype="multipart/form-data" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="name" class="block text-gray-700 font-semibold mb-2 flex items-center">
@@ -259,7 +261,7 @@
                         Upload Gambar Produk (Biarkan kosong untuk tidak mengubah)
                     </label>
                     <div class="relative">
-                        <input type="file" id="image" name="image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <input type="file" id="image" name="image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" style="z-index:10;">
                         <div id="upload-area" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition duration-300 bg-gray-50 hover:bg-blue-50 cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -302,12 +304,19 @@
                         Batal
                     </a>
                 </div>
+                <!-- Upload progress (hidden until upload starts) -->
+                <div id="upload-progress" class="mt-4 hidden">
+                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                        <div id="upload-progress-bar" class="bg-green-500 h-4 w-0 transition-all"></div>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-2 text-center"><span id="upload-progress-text">0%</span></div>
+                </div>
             </form>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8 mt-auto">
+    <footer class="site-footer bg-gray-800 text-white py-8 mt-auto">
         <div class="container mx-auto text-center px-4">
             <p>&copy; 2025 REVOZ. Semua Hak Dilindungi.</p>
         </div>
@@ -544,7 +553,8 @@
             const customPopupIcon = customPopup.querySelector('.icon');
             const customPopupMessage = customPopup.querySelector('.message');
 
-            const minLoadingTime = 100000; // Minimum 3.5 seconds display time for loading animation
+            // Minimum display time for loading animation (ms). Keep small so UI doesn't feel blocked.
+            const minLoadingTime = 1500; // 1.5 seconds
             let loadingStartTime;
 
             function showLoading() {
@@ -585,39 +595,108 @@
                 }, 3000); // Hide after 3 seconds
             }
 
-            // Handle form submission with fetch
+            // Handle form submission with XHR to enable upload progress and robust logging
             const editProductForm = document.querySelector('form');
-            editProductForm.addEventListener('submit', async function(e) {
+            editProductForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-
-                showLoading(); // Show loading animation
-
-                const formData = new FormData(this);
+                const form = this;
+                const formData = new FormData(form);
                 const productId = '<%= product.id %>';
 
-                try {
-                    const response = await fetch(`/api/products/${productId}`, {
-                        method: 'PUT',
-                        body: formData
-                    });
+                console.log('[edit] Submitting product edit for id=', productId);
 
-                    const result = await response.json();
-                    hideLoading(); // Hide loading animation (will respect minLoadingTime)
+                showLoading(); // Show loading animation
+                showProgressUI();
 
-                    if (result.ok) {
+                const xhr = new XMLHttpRequest();
+                xhr.open('PUT', `/api/products/${productId}`);
+
+                xhr.upload.onprogress = function(event) {
+                    if (event.lengthComputable) {
+                        const percent = Math.round((event.loaded / event.total) * 100);
+                        updateProgress(percent);
+                        console.log('[edit] upload progress', percent + '%');
+                    }
+                };
+
+                xhr.onload = function() {
+                    console.log('[edit] XHR onload status=', xhr.status);
+                    hideLoading();
+                    // Try to parse JSON, but handle non-JSON responses
+                    let result = null;
+                    try {
+                        result = JSON.parse(xhr.responseText);
+                    } catch (parseErr) {
+                        console.error('[edit] Failed to parse JSON response:', parseErr);
+                        console.log('[edit] responseText=', xhr.responseText);
+                        showCustomPopup('Server menghasilkan respons tidak valid.', false);
+                        hideProgressUI();
+                        return;
+                    }
+
+                    hideProgressUI();
+
+                    if (xhr.status >= 200 && xhr.status < 300 && result && result.ok) {
                         showCustomPopup('Produk berhasil diupdate', true);
                         setTimeout(() => {
-                            window.location.href = '/catalog'; // Redirect after popup
-                        }, 1500); // Give time for popup to be seen
+                            window.location.href = '/catalog';
+                        }, 1200);
                     } else {
-                        showCustomPopup('Gagal mengupdate produk: ' + (result.message || 'Terjadi kesalahan.'), false);
+                        console.warn('[edit] server returned error', result);
+                        showCustomPopup('Gagal mengupdate produk: ' + (result && result.message ? result.message : 'Terjadi kesalahan.'), false);
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                    hideLoading(); // Hide loading animation
-                    showCustomPopup('Terjadi kesalahan saat mengupdate produk.', false);
+                };
+
+                xhr.onerror = function() {
+                    console.error('[edit] XHR error', xhr.status);
+                    hideLoading();
+                    hideProgressUI();
+                    showCustomPopup('Terjadi kesalahan jaringan saat mengupload.', false);
+                };
+
+                xhr.onabort = function() {
+                    console.warn('[edit] XHR aborted');
+                    hideLoading();
+                    hideProgressUI();
+                    showCustomPopup('Upload dibatalkan.', false);
+                };
+
+                // Send the request
+                try {
+                    xhr.send(formData);
+                } catch (sendErr) {
+                    console.error('[edit] xhr.send error', sendErr);
+                    hideLoading();
+                    hideProgressUI();
+                    showCustomPopup('Gagal memulai upload.', false);
                 }
             });
+
+            // Progress UI helpers
+            function showProgressUI() {
+                const container = document.getElementById('upload-progress');
+                const bar = document.getElementById('upload-progress-bar');
+                const text = document.getElementById('upload-progress-text');
+                if (container && bar && text) {
+                    container.classList.remove('hidden');
+                    bar.style.width = '0%';
+                    text.textContent = '0%';
+                }
+            }
+
+            function updateProgress(percent) {
+                const bar = document.getElementById('upload-progress-bar');
+                const text = document.getElementById('upload-progress-text');
+                if (bar && text) {
+                    bar.style.width = percent + '%';
+                    text.textContent = percent + '%';
+                }
+            }
+
+            function hideProgressUI() {
+                const container = document.getElementById('upload-progress');
+                if (container) container.classList.add('hidden');
+            }
         });
     </script>
 
