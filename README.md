@@ -1,36 +1,28 @@
-# REVOZ — local development
+# KatalogPro - Node.js (migrated)
 
-This workspace contains the REVOZ app. The actual server source lives in `REVORZ/REVORZ/server.js`.
+Proyek ini adalah versi sederhana dari katalog produk. Saya memigrasikan server ke Node.js + Express menggunakan SQLite agar bisa berjalan langsung tanpa membutuhkan MySQL.
 
-Quick start (PowerShell on Windows):
+Quick start (Windows PowerShell):
 
-1. Install dependencies from the repo root:
+1. Install dependencies:
 
-```powershell
-npm install
-```
+   npm install
 
-2. Run in development (auto-restart on changes):
+2. Start the server:
 
-```powershell
-npm run dev
-```
+   npm start
 
-3. Run production / run once:
+3. Open your browser at:
 
-```powershell
-npm run start
-# or
-node .\app.js
-```
+   http://localhost:8888
 
-Notes:
-- The root `package.json` scripts now point directly to `REVORZ/REVORZ/server.js` for convenience.
-- A small shim `app.js` exists in the repo root and will require the nested server file, so `node app.js` also works.
-- The app uses a MySQL database. Create `REVORZ/REVORZ/database/.env` or set environment variables for DB connection and optional mailer configuration. Common env vars:
-	- DB_HOST, DB_USER, DB_PASSWORD, DB_NAME
-	- SESSION_SECRET
-	- SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM (optional for email)
-	- ADMIN_EMAIL (optional)
+Catatan:
+- Aplikasi menggunakan `database.sqlite` di root proyek. Server akan membuat tabel `users` dan `products` otomatis jika belum ada.
+- Rute penting disediakan di `server.js`: `/`, `/login`, `/register`, `/home`, `/logout`, dan API `/api/products`.
+- File tampilan statis ada di folder `views/` dan aset statis di `public/`.
 
-If you'd like I can also standardize the nested `package.json` or remove the shim; tell me which option you prefer.
+Konfigurasi tambahan:
+- Untuk mengubah port, set environment variable `PORT` sebelum menjalankan server.
+- Untuk produksi: ganti `SESSION_SECRET`, aktifkan HTTPS, tambahkan validasi input, dan jangan simpan file .env di repo.
+
+Butuh bantuan lagi? Saya bisa menambahkan skrip untuk memasukkan data produk contoh dan membuat akun tes, atau mengubah tampilan menjadi template engine (EJS) untuk halaman dinamis.
