@@ -1478,6 +1478,14 @@ const railwayDbConfig = {
     port: process.env.MYSQL_PORT,
 };
 
+// --- DEBUGGING RAILWAY DB VARS ---
+console.log('DEBUG: process.env.MYSQL_HOST:', process.env.MYSQL_HOST);
+console.log('DEBUG: process.env.MYSQL_USER:', process.env.MYSQL_USER);
+console.log('DEBUG: process.env.MYSQL_PASSWORD:', process.env.MYSQL_PASSWORD ? '********' : 'undefined/empty'); // Mask password
+console.log('DEBUG: process.env.MYSQL_DATABASE:', process.env.MYSQL_DATABASE);
+console.log('DEBUG: process.env.MYSQL_PORT:', process.env.MYSQL_PORT);
+// --- END DEBUGGING ---
+
 // Check if Railway variables are present
 if (railwayDbConfig.host && railwayDbConfig.user && railwayDbConfig.database) {
     db = mysql.createPool({
