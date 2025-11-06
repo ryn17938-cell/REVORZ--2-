@@ -1,6 +1,8 @@
 const path = require('path');
-// Load environment variables from the database/.env file located next to this server.js file
-require('dotenv').config({ path: path.join(__dirname, 'database', '.env') });
+// Load environment variables for local development
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.join(__dirname, 'database', '.env') });
+}
 const express = require('express');
 const mysql = require('mysql2');
 
