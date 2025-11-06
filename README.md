@@ -26,3 +26,4 @@ Konfigurasi tambahan:
 - Untuk produksi: ganti `SESSION_SECRET`, aktifkan HTTPS, tambahkan validasi input, dan jangan simpan file .env di repo.
 
 Butuh bantuan lagi? Saya bisa menambahkan skrip untuk memasukkan data produk contoh dan membuat akun tes, atau mengubah tampilan menjadi template engine (EJS) untuk halaman dinamis.
+
