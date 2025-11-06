@@ -4,6 +4,18 @@ require('dotenv').config({ path: path.join(__dirname, 'database', '.env') });
 const express = require('express');
 const mysql = require('mysql2');
 
+// --- VALIDATE ENVIRONMENT VARIABLES ---
+if (process.env.NODE_ENV === 'production') {
+    const requiredVars = ['MYSQL_HOST', 'MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE'];
+    const missingVars = requiredVars.filter(v => !process.env[v]);
+
+    if (missingVars.length > 0) {
+      throw new Error(`FATAL ERROR: Missing required environment variables on Railway: ${missingVars.join(', ')}. Please check your variables in the Railway dashboard.`);
+    }
+}
+// --- END VALIDATION ---
+
+
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const multer = require('multer');
