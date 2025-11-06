@@ -452,7 +452,7 @@
 
     <!-- Checkout Popup -->
     <div id="checkout-popup" class="confirmation-popup">
-        <div class="confirmation-popup-content" style="max-width: 650px; text-align: left;">
+        <div class="confirmation-popup-content max-h-screen overflow-y-auto" style="max-width: 650px; text-align: left;">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold">Detail Pembayaran</h3>
                 <button id="close-checkout-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
@@ -521,7 +521,7 @@
                 <!-- Right Side: Payment Info -->
                 <div class="bg-gray-50 p-6 rounded-lg">
                     <h4 class="font-bold text-lg mb-4">Metode Pembayaran</h4>
-                    <div class="space-y-4">
+                    <div class="space-y-4 max-h-48 overflow-y-auto">
                         <div>
                             <label class="flex items-center p-4 border-2 rounded-lg cursor-pointer hover:bg-blue-50 transition-all duration-200 hover:border-blue-500">
                                 <input type="radio" name="payment-group" value="e-wallet" class="form-radio h-5 w-5 text-blue-600">
@@ -555,14 +555,6 @@
                             </label>
                             <div id="virtual-account-options" class="hidden ml-8 mt-4 space-y-4">
                                 <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                                    <input type="radio" name="payment-method" value="DANA" class="form-radio h-4 w-4 text-blue-600">
-                                    <img src="/image/Logo DANA.png" alt="DANA" class="h-8 w-auto object-contain ml-3">
-                                </label>
-                                <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
-                                    <input type="radio" name="payment-method" value="GoPay" class="form-radio h-4 w-4 text-blue-600">
-                                    <img src="/image/Logo GOPAY.png" alt="GoPay" class="h-8 w-auto object-contain ml-3">
-                                </label>
-                                <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
                                     <input type="radio" name="payment-method" value="Mandiri VA" class="form-radio h-4 w-4 text-blue-600">
                                     <div class="ml-3 flex items-center">
                                         <img src="/image/Logo Mandiri.png" alt="Mandiri" class="h-8 w-auto object-contain">
@@ -574,6 +566,20 @@
                                     <div class="ml-3 flex items-center">
                                         <img src="/image/Logo BNI.png" alt="BNI" class="h-8 w-auto object-contain">
                                         <span class="ml-2 text-sm font-medium text-gray-700">Virtual Account BNI</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                                    <input type="radio" name="payment-method" value="BCA VA" class="form-radio h-4 w-4 text-blue-600">
+                                    <div class="ml-3 flex items-center">
+                                        <img src="/image/Logo.png" alt="BCA" class="h-8 w-auto object-contain">
+                                        <span class="ml-2 text-sm font-medium text-gray-700">Virtual Account BCA</span>
+                                    </div>
+                                </label>
+                                <label class="flex items-center p-3 border rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                                    <input type="radio" name="payment-method" value="BCA VA" class="form-radio h-4 w-4 text-blue-600">
+                                    <div class="ml-3 flex items-center">
+                                        <img src="/image/Logo BCA.png" alt="BCA" class="h-8 w-auto object-contain">
+                                        <span class="ml-2 text-sm font-medium text-gray-700">Virtual Account BCA</span>
                                     </div>
                                 </label>
                             </div>

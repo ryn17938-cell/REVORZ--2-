@@ -77,7 +77,7 @@
             left: 50%;
             transform: translate(-50%, -50%) scale(0.8);
             padding: 24px 32px;
-            border-radius: 12px;
+            border-radius: 16px;
             color: white;
             font-weight: 600;
             z-index: 10000;
@@ -85,10 +85,12 @@
             flex-direction: column;
             align-items: center;
             gap: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             opacity: 0;
             visibility: hidden;
-            transition: all 0.3s ease-in-out;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         .custom-popup.show {
             opacity: 1;
@@ -96,18 +98,51 @@
             transform: translate(-50%, -50%) scale(1);
         }
         .custom-popup.success {
-            background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.3);
         }
         .custom-popup.error {
-            background: linear-gradient(135deg, #f87171, #ef4444);
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 20px 40px rgba(239, 68, 68, 0.3);
         }
         .custom-popup .icon {
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
         .custom-popup .message {
             font-size: 1.125rem;
             text-align: center;
+            max-width: 300px;
+            line-height: 1.5;
+        }
+        .custom-popup .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .custom-popup .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -197,6 +232,7 @@
                 <p class="text-gray-600">Ubah detail produk yang sudah ada</p>
             </div>
             <form action="/api/products/<%= product.id %>" method="post" enctype="multipart/form-data" class="space-y-6">
+                <input type="hidden" name="_method" value="PUT">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="name" class="block text-gray-700 font-semibold mb-2 flex items-center">
@@ -224,6 +260,7 @@
                             Warna (pisahkan dengan koma)
                         </label>
                         <input type="text" id="warna" name="warna" value="<%= product.warna || '' %>" class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Contoh: Merah,Biru,Hijau">
+                        <p class="text-sm text-gray-500 mt-1">Pastikan urutan warna sesuai dengan urutan gambar jenis.</p>
                     </div>
                     <div>
                         <label for="ukuran" class="block text-gray-700 font-semibold mb-2 flex items-center">
@@ -258,10 +295,10 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        Upload Gambar Produk (Biarkan kosong untuk tidak mengubah)
+                        Upload Gambar Produk (Bisa lebih dari satu, akan menggantikan gambar lama)
                     </label>
                     <div class="relative">
-                        <input type="file" id="image" name="image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" style="z-index:10;">
+                        <input type="file" id="image" name="image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" multiple>
                         <div id="upload-area" class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-500 transition duration-300 bg-gray-50 hover:bg-blue-50 cursor-pointer">
                             <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -270,22 +307,17 @@
                             <p class="text-sm text-gray-500">PNG, JPG, GIF hingga 10MB</p>
                         </div>
                     </div>
-                    <div id="image-preview" class="mt-6 <%= product.image ? '' : 'hidden' %>">
-                        <div class="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 max-w-sm mx-auto">
-                            <img id="preview-img" src="<%= product.image || '' %>" alt="Preview Produk" class="w-full h-48 object-cover">
-                            <div class="p-6">
-                                <h3 class="text-xl font-semibold mb-2 text-gray-900">Gambar Saat Ini</h3>
-                                <button type="button" id="remove-preview" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-full text-sm transition duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                    Hapus Gambar
-                                </button>
-                            </div>
-                        </div>
-                        <p class="text-sm text-gray-600 mt-4 text-center">Gambar produk saat ini</p>
+                    <div id="image-preview-container" class="mt-6 grid grid-cols-2 gap-4">
+                        <!-- Existing and new image previews will be appended here -->
                     </div>
                 </div>
+                <label class="block text-gray-700 font-semibold mb-2 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Gambar Jenis
+                </label>
+                <p class="text-sm text-gray-500 mt-1 mb-2">Pastikan urutan gambar jenis sesuai dengan urutan warna.</p>
                 <div id="jenis-images-container" class="space-y-4">
                     <!-- Dynamic jenis image inputs will be added here by JavaScript -->
                 </div>
@@ -326,40 +358,50 @@
         document.addEventListener('DOMContentLoaded', function() {
             const imageInput = document.getElementById('image');
             const uploadArea = document.getElementById('upload-area');
-            const preview = document.getElementById('image-preview');
-            const previewImg = document.getElementById('preview-img');
-            const removeBtn = document.getElementById('remove-preview');
-            const nameInput = document.getElementById('name');
-            const descriptionInput = document.getElementById('description');
-            const priceInput = document.getElementById('price');
-            const warnaInput = document.getElementById('warna');
-            const ukuranInput = document.getElementById('ukuran');
+            const previewContainer = document.getElementById('image-preview-container');
+            const existingImages = JSON.parse('<%- JSON.stringify(product.image ? product.image.split(',') : []) %>');
 
-            function showPreview(file) {
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewImg.src = e.target.result;
-                        preview.classList.remove('hidden');
-                        uploadArea.classList.add('hidden');
-                    };
-                    reader.readAsDataURL(file);
+            function showPreviews(filesOrPaths, isExisting = false) {
+                if (!isExisting) {
+                    previewContainer.innerHTML = ''; // Clear existing previews only when new files are selected
+                }
+                if (filesOrPaths && filesOrPaths.length > 0) {
+                    previewContainer.classList.remove('hidden');
+                    uploadArea.classList.add('hidden');
+                    Array.from(filesOrPaths).forEach(item => {
+                        const previewWrapper = document.createElement('div');
+                        previewWrapper.className = 'relative';
+                        if (isExisting) {
+                            previewWrapper.innerHTML = `
+                                <img src="${item}" class="w-full h-48 object-cover rounded-lg shadow-md">
+                            `;
+                        } else {
+                            if (item.type.startsWith('image/')) {
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    previewWrapper.innerHTML = `
+                                        <img src="${e.target.result}" class="w-full h-48 object-cover rounded-lg shadow-md">
+                                    `;
+                                };
+                                reader.readAsDataURL(item);
+                            }
+                        }
+                        previewContainer.appendChild(previewWrapper);
+                    });
+                } else {
+                    previewContainer.classList.add('hidden');
+                    uploadArea.classList.remove('hidden');
                 }
             }
 
-            function hidePreview() {
-                preview.classList.add('hidden');
-                uploadArea.classList.remove('hidden');
-                imageInput.value = '';
-                previewImg.src = ''; // Clear the image source
-            }
+            // Show existing images on page load
+            showPreviews(existingImages, true);
 
             imageInput.addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                showPreview(file);
+                showPreviews(event.target.files);
             });
 
-            // Drag and drop functionality for main image
+            // Drag and drop functionality
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 uploadArea.addEventListener(eventName, preventDefaults, false);
             });
@@ -390,18 +432,9 @@
             function handleDrop(e) {
                 const dt = e.dataTransfer;
                 const files = dt.files;
-                if (files.length > 0) {
-                    const file = files[0];
-                    if (file.type.startsWith('image/')) {
-                        imageInput.files = files;
-                        showPreview(file);
-                    } else {
-                        alert('Harap pilih file gambar yang valid.');
-                    }
-                }
+                imageInput.files = files;
+                showPreviews(files);
             }
-
-            removeBtn.addEventListener('click', hidePreview);
 
             const spesifikasiInput = document.getElementById('spesifikasi');
             spesifikasiInput.addEventListener('keydown', function(e) {
@@ -546,157 +579,6 @@
             } else {
                 addJenisImageInput(); // Always add at least one empty input
             }
-
-            // Get references to the new elements
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const customPopup = document.getElementById('custom-popup');
-            const customPopupIcon = customPopup.querySelector('.icon');
-            const customPopupMessage = customPopup.querySelector('.message');
-
-            // Minimum display time for loading animation (ms). Keep small so UI doesn't feel blocked.
-            const minLoadingTime = 1500; // 1.5 seconds
-            let loadingStartTime;
-
-            function showLoading() {
-                loadingStartTime = Date.now();
-                loadingOverlay.classList.add('show');
-            }
-
-            function hideLoading() {
-                const elapsedTime = Date.now() - loadingStartTime;
-                const remainingTime = minLoadingTime - elapsedTime;
-
-                if (remainingTime > 0) {
-                    setTimeout(() => {
-                        loadingOverlay.classList.remove('show');
-                    }, remainingTime);
-                } else {
-                    loadingOverlay.classList.remove('show');
-                }
-            }
-
-            function showCustomPopup(message, success = true) {
-                customPopupMessage.textContent = message;
-                customPopup.classList.remove('success', 'error');
-                customPopupIcon.innerHTML = ''; // Clear previous icon
-
-                if (success) {
-                    customPopup.classList.add('success');
-                    customPopupIcon.innerHTML = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
-                } else {
-                    customPopup.classList.add('error');
-                    customPopupIcon.innerHTML = `<svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
-                }
-
-                customPopup.classList.add('show');
-
-                setTimeout(() => {
-                    customPopup.classList.remove('show');
-                }, 3000); // Hide after 3 seconds
-            }
-
-            // Handle form submission with XHR to enable upload progress and robust logging
-            const editProductForm = document.querySelector('form');
-            editProductForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const form = this;
-                const formData = new FormData(form);
-                const productId = '<%= product.id %>';
-
-                console.log('[edit] Submitting product edit for id=', productId);
-
-                showLoading(); // Show loading animation
-                showProgressUI();
-
-                const xhr = new XMLHttpRequest();
-                xhr.open('PUT', `/api/products/${productId}`);
-
-                xhr.upload.onprogress = function(event) {
-                    if (event.lengthComputable) {
-                        const percent = Math.round((event.loaded / event.total) * 100);
-                        updateProgress(percent);
-                        console.log('[edit] upload progress', percent + '%');
-                    }
-                };
-
-                xhr.onload = function() {
-                    console.log('[edit] XHR onload status=', xhr.status);
-                    hideLoading();
-                    // Try to parse JSON, but handle non-JSON responses
-                    let result = null;
-                    try {
-                        result = JSON.parse(xhr.responseText);
-                    } catch (parseErr) {
-                        console.error('[edit] Failed to parse JSON response:', parseErr);
-                        console.log('[edit] responseText=', xhr.responseText);
-                        showCustomPopup('Server menghasilkan respons tidak valid.', false);
-                        hideProgressUI();
-                        return;
-                    }
-
-                    hideProgressUI();
-
-                    if (xhr.status >= 200 && xhr.status < 300 && result && result.ok) {
-                        showCustomPopup('Produk berhasil diupdate', true);
-                        setTimeout(() => {
-                            window.location.href = '/catalog';
-                        }, 1200);
-                    } else {
-                        console.warn('[edit] server returned error', result);
-                        showCustomPopup('Gagal mengupdate produk: ' + (result && result.message ? result.message : 'Terjadi kesalahan.'), false);
-                    }
-                };
-
-                xhr.onerror = function() {
-                    console.error('[edit] XHR error', xhr.status);
-                    hideLoading();
-                    hideProgressUI();
-                    showCustomPopup('Terjadi kesalahan jaringan saat mengupload.', false);
-                };
-
-                xhr.onabort = function() {
-                    console.warn('[edit] XHR aborted');
-                    hideLoading();
-                    hideProgressUI();
-                    showCustomPopup('Upload dibatalkan.', false);
-                };
-
-                // Send the request
-                try {
-                    xhr.send(formData);
-                } catch (sendErr) {
-                    console.error('[edit] xhr.send error', sendErr);
-                    hideLoading();
-                    hideProgressUI();
-                    showCustomPopup('Gagal memulai upload.', false);
-                }
-            });
-
-            // Progress UI helpers
-            function showProgressUI() {
-                const container = document.getElementById('upload-progress');
-                const bar = document.getElementById('upload-progress-bar');
-                const text = document.getElementById('upload-progress-text');
-                if (container && bar && text) {
-                    container.classList.remove('hidden');
-                    bar.style.width = '0%';
-                    text.textContent = '0%';
-                }
-            }
-
-            function updateProgress(percent) {
-                const bar = document.getElementById('upload-progress-bar');
-                const text = document.getElementById('upload-progress-text');
-                if (bar && text) {
-                    bar.style.width = percent + '%';
-                    text.textContent = percent + '%';
-                }
-            }
-
-            function hideProgressUI() {
-                const container = document.getElementById('upload-progress');
-                if (container) container.classList.add('hidden');
-            }
         });
     </script>
 
@@ -707,8 +589,9 @@
 
     <!-- Custom Popup Notification -->
     <div id="custom-popup" class="custom-popup">
-        <div class="icon"></div>
-        <div class="message"></div>
+        <button class="close-btn" onclick="hideCustomPopup()">&times;</button>
+        <div class="icon" id="popup-icon"></div>
+        <div class="message" id="popup-message"></div>
     </div>
 
 </body>

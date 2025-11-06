@@ -3,9 +3,11 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, 'database', '.env') });
 const express = require('express');
 const mysql = require('mysql2');
+
 const bcrypt = require('bcrypt');
 const session = require('express-session');
 const multer = require('multer');
+const methodOverride = require('method-override'); // Require method-override
 
 const app = express();
 const port = process.env.PORT || 8888;
@@ -13,6 +15,7 @@ const port = process.env.PORT || 8888;
 // Middleware to parse form data
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(methodOverride('_method')); // Use method-override middleware
 // Add Content Security Policy middleware
 app.use((req, res, next) => {
     // Allow Google Fonts (fonts.googleapis.com for styles and fonts.gstatic.com for font resources)
@@ -50,9 +53,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // POST /api/products/add - Add new product (admin only)
-app.post('/api/products/add', requireAuth, requireAdmin, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'jenis_images', maxCount: 5 }]), (req, res) => {
+app.post('/api/products/add', requireAuth, requireAdmin, upload.fields([{ name: 'image', maxCount: 2 }, { name: 'jenis_images', maxCount: 7 }]), (req, res) => {
     const { name, description, price, spesifikasi, warna, ukuran } = req.body;
-    const mainImage = req.files && req.files.image ? '/image/' + req.files.image[0].filename : '';
+    const mainImage = req.files && req.files.image ? req.files.image.map(file => '/image/' + file.filename).join(',') : '';
     const jenisImages = req.files && req.files.jenis_images ? req.files.jenis_images.map(file => '/image/' + file.filename).join(',') : null;
 
     if (!name || !description || !price) return res.status(400).send('Missing required fields');
@@ -85,11 +88,11 @@ app.delete('/api/products/:id', requireAuth, requireAdmin, (req, res) => {
     });
 });
 
-// PUT /api/products/:id - Edit product (admin only)
-app.put('/api/products/:id', requireAuth, requireAdmin, upload.fields([{ name: 'image', maxCount: 1 }, { name: 'jenis_images', maxCount: 5 }]), (req, res) => {
+// POST /api/products/:id - Edit product (admin only)
+app.post('/api/products/:id', requireAuth, requireAdmin, upload.fields([{ name: 'image', maxCount: 2 }, { name: 'jenis_images', maxCount: 7 }]), (req, res) => {
     const productId = req.params.id;
     const { name, description, price, spesifikasi, warna, ukuran, deleted_jenis_images } = req.body; // Get deleted_jenis_images
-    const mainImage = req.files && req.files.image && req.files.image.length > 0 ? '/image/' + req.files.image[0].filename : null;
+    const mainImage = req.files && req.files.image && req.files.image.length > 0 ? req.files.image.map(file => '/image/' + file.filename).join(',') : null;
     const newJenisImages = req.files && req.files.jenis_images && req.files.jenis_images.length > 0 ? req.files.jenis_images.map(file => '/image/' + file.filename).join(',') : null;
 
     if (!productId) return res.status(400).json({ ok: false, message: 'Missing product ID' });
@@ -157,7 +160,7 @@ app.put('/api/products/:id', requireAuth, requireAdmin, upload.fields([{ name: '
                 if (result.affectedRows === 0) {
                     return res.status(404).json({ ok: false, message: 'Product not found' });
                 }
-                res.json({ ok: true, message: 'Product updated successfully' });
+                res.redirect('/catalog');
             });
         }
 
@@ -1465,15 +1468,45 @@ app.get('/product-ratings', requireAuth, requireAdmin, async (req, res) => {
 });
 
 // MySQL connection pool
-const db = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'revoz',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
+let db;
+// Prioritize Railway-provided variables
+const railwayDbConfig = {
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    port: process.env.MYSQL_PORT,
+};
+
+// Check if Railway variables are present
+if (railwayDbConfig.host && railwayDbConfig.user && railwayDbConfig.database) {
+    db = mysql.createPool({
+        host: railwayDbConfig.host,
+        user: railwayDbConfig.user,
+        password: railwayDbConfig.password,
+        database: railwayDbConfig.database,
+        port: railwayDbConfig.port ? parseInt(railwayDbConfig.port, 10) : 3306, // Default MySQL port
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
+    });
+    console.log('Connected to Railway MySQL database.');
+} else if (process.env.DATABASE_URL) { // Fallback for Heroku-style DATABASE_URL (if user changes mind or has it)
+    db = mysql.createPool(process.env.DATABASE_URL);
+    console.log('Connected to DATABASE_URL MySQL database.');
+} else {
+    // Local environment or other custom env vars
+    db = mysql.createPool({
+        host: process.env.DB_HOST || 'localhost',
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'revoz',
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0
+    });
+    console.log('Connected to local/custom MySQL database.');
+}
 
 // Test connection
 db.getConnection((err, connection) => {
@@ -1520,8 +1553,7 @@ db.query(`CREATE TABLE IF NOT EXISTS carts (
     if (err) console.error('Error creating carts table:', err);
 });
 
-db.query(`CREATE TABLE IF NOT EXISTS cart_items (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+db.query(`CREATE TABLE IF NOT EXISTS cart_items (\n    id INT PRIMARY KEY AUTO_INCREMENT,
     cart_id INT NOT NULL,
     product_id INT NOT NULL,
     quantity INT NOT NULL DEFAULT 1,

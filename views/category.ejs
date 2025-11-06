@@ -76,30 +76,36 @@
         </div>
     </header>
 
-    <main class="flex-grow container mx-auto py-8 px-4">
-        <div class="text-center mb-10">
-            <% if (filters.q) { %>
-                <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight">Hasil Pencarian untuk "<%= filters.q %>"</h1>
-            <% } else { %>
-                <h1 class="text-5xl font-extrabold text-gray-800 tracking-tight">Semua Produk</h1>
-            <% } %>
-            <p class="mt-3 text-lg text-gray-600">Urutkan produk sesuai keinginan Anda.</p>
-        </div>
+    <main class="container mx-auto flex flex-col lg:flex-row gap-8 py-8 px-4">
 
-        <section class="w-full">
-            <form id="filter-form" action="/category" method="GET" class="bg-white p-4 rounded-lg shadow-md mb-6">
-            <form id="filter-form" action="/category" method="GET" class="bg-white p-4 rounded-lg shadow-md mb-6">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <!-- Search Bar -->
-                    <div class="w-full md:w-2/5">
-                        <input type="search" name="q" placeholder="Cari produk dalam kategori ini..." class="w-full border-gray-300 border rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500" value="<%= filters.q || '' %>">
+        <!-- Sticky Sidebar for Filters -->
+        <aside class="w-full lg:w-1/4 xl:w-1/5">
+            <div class="lg:sticky lg:top-28">
+                <form id="filter-form" action="/category" method="GET" class="space-y-6">
+                    <!-- Search Filter -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="font-bold text-lg mb-3 text-gray-800">Cari Produk</h3>
+                        <input type="search" name="q" placeholder="Nama produk..." class="w-full border-gray-300 border rounded-lg p-2 text-sm focus:ring-blue-500 focus:border-blue-500 transition" value="<%= filters.q || '' %>">
                     </div>
-                    
+
+                    <!-- Sorting -->
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="font-bold text-lg mb-3 text-gray-800">Urutkan</h3>
+                        <select name="sort" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500 focus:border-blue-500 transition" onchange="this.form.submit()">
+                            <option value="" <%= !filters.sort ? 'selected' : '' %>>Terbaru</option>
+                            <option value="price_desc" <%= filters.sort === 'price_desc' ? 'selected' : '' %>>Harga Tertinggi</option>
+                            <option value="price_asc" <%= filters.sort === 'price_asc' ? 'selected' : '' %>>Harga Terendah</option>
+                            <option value="rating_desc" <%= filters.sort === 'rating_desc' ? 'selected' : '' %>>Rating Tertinggi</option>
+                            <option value="name_asc" <%= filters.sort === 'name_asc' ? 'selected' : '' %>>Nama: A-Z</option>
+                            <option value="name_desc" <%= filters.sort === 'name_desc' ? 'selected' : '' %>>Nama: Z-A</option>
+                        </select>
+                    </div>
+
                     <!-- Brand Filter -->
-                    <div class="flex items-center w-full md:w-auto">
-                        <label for="brand" class="mr-2 text-gray-600 flex-shrink-0">Merek:</label>
-                        <select name="brand" id="brand" class="w-full md:w-48 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500" onchange="document.getElementById('filter-form').submit();">
-                            <option value="">Semua</option>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="font-bold text-lg mb-3 text-gray-800">Merek</h3>
+                        <select name="brand" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500 focus:border-blue-500 transition" onchange="this.form.submit()">
+                            <option value="">Semua Merek</option>
                             <% uniqueBrands.forEach(b => { %>
                                 <option value="<%= b %>" <%= filters.brand === b ? 'selected' : '' %>><%= b %></option>
                             <% }); %>
@@ -107,85 +113,90 @@
                     </div>
 
                     <!-- Rating Filter -->
-                    <div class="flex items-center w-full md:w-auto">
-                        <label for="min_rating" class="mr-2 text-gray-600 flex-shrink-0">Min. Rating:</label>
-                        <select name="min_rating" id="min_rating" class="w-full md:w-32 border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500" onchange="document.getElementById('filter-form').submit();">
-                            <option value="">Semua</option>
-                            <% for (let i = 1; i <= 5; i++) { %>
-                                <option value="<%= i %>" <%= filters.min_rating == i ? 'selected' : '' %>><%= i %> Bintang</option>
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="font-bold text-lg mb-3 text-gray-800">Minimum Rating</h3>
+                        <select name="min_rating" class="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-blue-500 focus:border-blue-500 transition" onchange="this.form.submit()">
+                            <option value="">Semua Rating</option>
+                            <% for (let i = 4; i >= 1; i--) { %>
+                                <option value="<%= i %>" <%= filters.min_rating == i ? 'selected' : '' %>>Minimal <%= i %> Bintang</option>
                             <% } %>
                         </select>
                     </div>
 
-                    <!-- Sorting -->
-                    <div class="flex items-center w-full md:w-auto">
-                        <label for="sort" class="mr-2 text-gray-600 flex-shrink-0">Urutkan:</label>
-                        <div class="relative" id="sort-dropdown">
-                            <input type="hidden" name="sort" id="sort-value" value="<%= filters.sort || '' %>">
-                            <button type="button" id="sort-button" class="flex items-center justify-between w-full md:w-56 border border-gray-300 rounded-md p-2 bg-white shadow-sm">
-                                <span id="sort-label">Terbaru</span>
-                                <svg class="w-5 h-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-                            </button>
-                            <div id="sort-options" class="hidden absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
-                                <div class="py-1" role="menu" aria-orientation="vertical">
-                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="">Terbaru</a>
-                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="price_desc">Harga Tertinggi</a>
-                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="price_asc">Harga Terendah</a>
-                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="name_asc">Nama: A-Z</a>
-                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="name_desc">Nama: Z-A</a>
-                                    <a href="#" class="sort-option block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" data-value="rating_desc">Rating Tertinggi</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button type="submit" class="hidden">Submit</button> 
-            </form>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-md">Terapkan Filter</button>
+                </form>
+            </div>
+        </aside>
 
-            <div class="mb-6 text-gray-600">
-                <span>Menampilkan <%= products.length %> dari <%= pagination.totalProducts %> produk</span>
+        <!-- Main Content - Product Grid -->
+        <section class="w-full lg:w-3/4 xl:w-4/5">
+            <div class="mb-6 bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800"><%= filters.q ? `Hasil untuk "${filters.q}"` : "Semua Produk" %></h1>
+                <span class="text-gray-600 font-medium">Menampilkan <%= products.length %> dari <%= pagination.totalProducts %> produk</span>
             </div>
 
             <% if (products.length) { %>
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                     <% products.forEach(p => { %>
-                        <div class="product-card bg-white rounded-lg shadow-md overflow-hidden">
-                            <a href="/product/<%= p.id %>">
-                                <img src="<%= p.image || '/image/katalog.png' %>" alt="<%= p.name %>" class="w-full h-48 object-cover">
+                        <div class="product-card group bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-2xl hover:border-blue-400 transition-all duration-500 ease-in-out transform hover:-translate-y-2">
+                            <a href="/product/<%= p.id %>" class="block overflow-hidden" aria-label="Lihat detail <%= p.name %>">
+                                <div class="w-full h-64 bg-gray-100">
+                                    <img src="<%= p.image || '/image/katalog.png' %>" alt="<%= p.name %>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"/>
+                                </div>
                             </a>
-                            <div class="p-4">
-                                <h3 class="product-title"><a href="/product/<%= p.id %>" class="hover:text-blue-600"><%- highlightSearchTerm(p.name, filters.q) %></a></h3>
-                                <p class="product-description"><%- highlightSearchTerm((p.description || 'Deskripsi produk tidak tersedia.').replace(/<[^>]+>/g, ''), filters.q) %></p>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-blue-600 font-bold text-lg">Rp <%= p.price.toLocaleString('id-ID') %></span>
-                                    <a href="/product/<%= p.id %>" class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded-full text-xs transition duration-300">Detail</a>
+                            <div class="p-5">
+                                <h3 class="text-lg font-bold text-gray-800 truncate mb-1"><a href="/product/<%= p.id %>" class="hover:text-blue-600 transition-colors"><%- highlightSearchTerm(p.name, filters.q) %></a></h3>
+                                <p class="text-gray-600 text-sm mb-4 h-10"><%- highlightSearchTerm((p.description || 'Deskripsi produk tidak tersedia.').replace(/<[^>]+>/g, '').substring(0, 80) + '...', filters.q) %></p>
+                                <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                                    <span class="text-blue-700 font-extrabold text-xl">Rp <%= p.price.toLocaleString('id-ID') %></span>
+                                    <a href="/product/<%= p.id %>" class="btn-primary inline-flex items-center text-xs font-bold py-2 px-4 rounded-full">
+                                        <span>Detail</span>
+                                        <svg class="w-4 h-4 ml-1.5 transform transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     <% }) %>
                 </div>
             <% } else { %>
-                <div class="text-center py-16 bg-white rounded-lg shadow-md">
-                    <h2 class="text-2xl font-semibold text-gray-700">Tidak Ada Produk</h2>
-                    <p class="text-gray-500 mt-2">Tidak ada produk yang ditemukan.</p>
+                <div class="text-center py-20 bg-white rounded-xl shadow-sm border border-gray-200">
+                    <h2 class="text-3xl font-semibold text-gray-700">Tidak Ada Produk</h2>
+                    <p class="text-gray-500 mt-3">Tidak ada produk yang cocok dengan filter Anda.</p>
+                    <a href="/category" class="mt-6 inline-block bg-blue-600 text-white font-bold py-2 px-5 rounded-lg hover:bg-blue-700 transition-all">Hapus Filter</a>
                 </div>
             <% } %>
 
             <!-- Pagination -->
-            <div class="flex justify-center mt-8 space-x-2">
+            <div class="flex justify-center mt-10 space-x-2">
                 <% if (pagination.totalPages > 1) { %>
                     <% 
                     const urlParams = new URLSearchParams(filters);
-                    %> 
-                    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
-                        <% 
-                        urlParams.set('page', i);
-                        const queryString = urlParams.toString();
-                        %> 
-                        <a href="?<%= queryString %>" 
-                           class="<%= pagination.page === i ? 'bg-blue-600 text-white' : 'bg-white text-gray-700' %> px-4 py-2 rounded-lg hover:bg-blue-700 hover:text-white transition-colors duration-200 border border-gray-300">
+                    const currentPage = pagination.page;
+                    const totalPages = pagination.totalPages;
+                    const maxPagesToShow = 5;
+                    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+                    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+                    if (endPage - startPage + 1 < maxPagesToShow) {
+                        startPage = Math.max(1, endPage - maxPagesToShow + 1);
+                    }
+                    %>
+
+                    <% if (currentPage > 1) { %>
+                        <% urlParams.set('page', currentPage - 1); %>
+                        <a href="?<%= urlParams.toString() %>" class="bg-white text-gray-700 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200 border border-gray-300 shadow-sm">‹</a>
+                    <% } %>
+
+                    <% for (let i = startPage; i <= endPage; i++) { %>
+                        <% urlParams.set('page', i); %> 
+                        <a href="?<%= urlParams.toString() %>" 
+                           class="<%= currentPage === i ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300' %> px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200 border shadow-sm">
                             <%= i %>
                         </a>
+                    <% } %>
+
+                    <% if (currentPage < totalPages) { %>
+                        <% urlParams.set('page', currentPage + 1); %>
+                        <a href="?<%= urlParams.toString() %>" class="bg-white text-gray-700 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition-colors duration-200 border border-gray-300 shadow-sm">›</a>
                     <% } %>
                 <% } %>
             </div>

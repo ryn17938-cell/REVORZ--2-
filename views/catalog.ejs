@@ -390,6 +390,17 @@
         .popup-notification.error {
             background: linear-gradient(135deg, #f87171, #ef4444);
         }
+
+        .add-to-cart-button {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease-out;
+        }
+
+        .product-card:hover .add-to-cart-button {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
 <body class="font-sans text-gray-800 min-h-screen flex flex-col">
@@ -560,7 +571,7 @@
                                 <button data-product-id="<%= p.id %>" 
                                         data-warna="<%= p.warna || '' %>"
                                         data-ukuran="<%= p.ukuran || '' %>"
-                                        class="btn-primary add-to-cart">
+                                        class="btn-primary add-to-cart add-to-cart-button">
                                     <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 0a2 2 0 100 4 2 2 0 000-4z"></path>
                                     </svg>
@@ -650,16 +661,19 @@
                 const warnaString = btn.dataset.warna;
                 const ukuranString = btn.dataset.ukuran;
 
-                // Get the first available color and size as default
-                const defaultWarna = warnaString ? warnaString.split(',')[0].trim() : 'Tidak Tersedia';
-                const defaultUkuran = ukuranString ? ukuranString.split(',')[0].trim() : 'Tidak Tersedia';
+                const cartItem = {
+                    product_id: id,
+                    quantity: 1
+                };
 
-                const r = await postJson('/api/cart/add', { 
-                    product_id: id, 
-                    quantity: 1,
-                    warna: defaultWarna,
-                    ukuran: defaultUkuran
-                });
+                if (warnaString) {
+                    cartItem.warna = warnaString.split(',')[0].trim();
+                }
+                if (ukuranString) {
+                    cartItem.ukuran = ukuranString.split(',')[0].trim();
+                }
+
+                const r = await postJson('/api/cart/add', cartItem);
 
                 if (r && r.ok) {
                     showPopup('Produk ditambahkan ke keranjang');
@@ -785,13 +799,28 @@
 
             function applyFilters(s){
                 const cards = Array.from(document.querySelectorAll('.product-card'));
+                let visibleCards = 0;
                 cards.forEach(card => {
                     const price = Number(card.dataset.price || 0);
                     const cat = (card.dataset.category || '').toString();
                     const inPrice = price >= Number(s.min) && price <= Number(s.max);
                     const inCat = s.categories.length === 0 || s.categories.includes(cat);
-                    card.style.display = (inPrice && inCat) ? '' : 'none';
+                    if (inPrice && inCat) {
+                        card.style.display = '';
+                        visibleCards++;
+                    } else {
+                        card.style.display = 'none';
+                    }
                 });
+
+                const emptyState = document.querySelector('main .empty-state');
+                if (emptyState) {
+                    if (visibleCards === 0) {
+                        emptyState.style.display = 'block';
+                    } else {
+                        emptyState.style.display = 'none';
+                    }
+                }
             }
 
             function readUIAndApply(){
