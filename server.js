@@ -6,16 +6,6 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express');
 const mysql = require('mysql2');
 
-// --- VALIDATE ENVIRONMENT VARIABLES ---
-if (process.env.NODE_ENV === 'production') {
-    const requiredVars = ['MYSQL_HOST', 'MYSQL_USER', 'MYSQL_PASSWORD', 'MYSQL_DATABASE'];
-    const missingVars = requiredVars.filter(v => !process.env[v]);
-
-    if (missingVars.length > 0) {
-      throw new Error(`FATAL ERROR: Missing required environment variables on Railway: ${missingVars.join(', ')}. Please check your variables in the Railway dashboard.`);
-    }
-}
-// --- END VALIDATION ---
 
 
 const bcrypt = require('bcrypt');
@@ -1492,13 +1482,6 @@ const railwayDbConfig = {
     port: process.env.MYSQL_PORT,
 };
 
-// --- DEBUGGING RAILWAY DB VARS ---
-console.log('DEBUG: process.env.MYSQL_HOST:', process.env.MYSQL_HOST);
-console.log('DEBUG: process.env.MYSQL_USER:', process.env.MYSQL_USER);
-console.log('DEBUG: process.env.MYSQL_PASSWORD:', process.env.MYSQL_PASSWORD ? '********' : 'undefined/empty'); // Mask password
-console.log('DEBUG: process.env.MYSQL_DATABASE:', process.env.MYSQL_DATABASE);
-console.log('DEBUG: process.env.MYSQL_PORT:', process.env.MYSQL_PORT);
-// --- END DEBUGGING ---
 
 // Check if Railway variables are present
 if (railwayDbConfig.host && railwayDbConfig.user && railwayDbConfig.database) {
